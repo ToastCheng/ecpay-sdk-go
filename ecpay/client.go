@@ -12,6 +12,7 @@ import (
 type Client struct {
 	merchantID string
 	endpoint   string
+	vendor     string
 	httpClient *http.Client
 	options    ClientOption
 }
@@ -21,7 +22,8 @@ type ClientOption func(*Client) error
 
 // WithSandbox .
 func WithSandbox(client *Client) error {
-	client.endpoint = "https://payment-stage.ecpay.com.tw/"
+	client.endpoint = "https://payment-stage.ecpay.com.tw"
+	client.vendor = "https://vendor-stage.ecpay.com.tw"
 	return nil
 }
 
@@ -29,6 +31,8 @@ func WithSandbox(client *Client) error {
 func NewClient(merchantID string, options ...ClientOption) (*Client, error) {
 	c := &Client{
 		merchantID: merchantID,
+		endpoint:   "https://payment.ecpay.com.tw",
+		vendor:     "https://vendor.ecpay.com.tw",
 		httpClient: &http.Client{},
 	}
 	for _, option := range options {
@@ -41,23 +45,19 @@ func NewClient(merchantID string, options ...ClientOption) (*Client, error) {
 }
 
 // Order .
-func (c *Client) Order() {
+func (c *Client) Order() ([]byte, error) {
 
 	form := api.NewECPayOrderFormData(api.OrderRequest{})
 	formStr := form.Encode()
 	formStr = strings.ReplaceAll(formStr, "-", "%2d")
 	formStr = strings.ReplaceAll(formStr, "_", "%5f")
-	// formStr = strings.ReplaceAll(formStr, ".", "%2e")
 	formStr = strings.ReplaceAll(formStr, "*", "%2a")
 	formStr = strings.ReplaceAll(formStr, "(", "%28")
 	formStr = strings.ReplaceAll(formStr, ")", "%29")
 	formStr = strings.ReplaceAll(formStr, "+", "%20")
 
-	// formStr := "MerchantID=2000132&MerchantTradeNo=icuhricuevciu1&MerchantTradeDate=2020%2F03%2F29%2015%3A54%3A00&PaymentType=aio&ChoosePayment=Credit&ItemName=%E7%8E%A9%E5%85%B7&TotalAmount=100&CheckMacValue=83BD2D02AE61D5E498664781FCBF0083DEDC9CBC5A07AA220D02ADCA10B2059F&ReturnURL=https%3A%2F%2Fgoogle.com&TradeDesc=%E5%A5%BD%E7%8E%A9&EncryptType=1"
-	log.Print(formStr)
-	client := &http.Client{}
-	ecpayReq, _ := http.NewRequest("POST", api.NewOrderUrl, strings.NewReader(formStr))
-	// ecpayReq, _ := http.NewRequest("POST", "https://en3am9d2przom.x.pipedream.net/", strings.NewReader(formStr))
+	ecpayReq, _ := http.NewRequest("POST", c.endpoint+"/Cashier/AioCheckOut/V5", strings.NewReader(formStr))
+
 	ecpayReq.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	ecpayReq.Header.Add("accept", "*/*")
 	ecpayReq.Header.Add("accept-encoding", "gzip, deflate, br")
@@ -65,26 +65,71 @@ func (c *Client) Order() {
 	ecpayReq.Header.Add("cache-control", "no-cache")
 	ecpayReq.Header.Add("postman-token", "40975c86-58b2-4b7e-aee6-9add8ed2cc09")
 
-	// log.Printf("ecpay req: %v", ecpayReq)
-
-	ecpayResp, err := client.Do(ecpayReq)
-	// ecpayResp, err := http.PostForm("https://en3am9d2przom.x.pipedream.net/", form)
+	ecpayResp, err := c.httpClient.Do(ecpayReq)
 	if err != nil {
 		log.Printf("failed to create order: %v", err)
+		return nil, err
 	}
 	defer ecpayResp.Body.Close()
 
-	// bodyBytes, err := ioutil.ReadAll(ecpayResp.Body)
-	// if err != nil {
+	bodyBytes, err := ioutil.ReadAll(ecpayResp.Body)
+	if err != nil {
 		// log.Fatal(err)
+		return nil, err
 	}
+
+	return bodyBytes, nil
 
 	// w.Header().Set("Content-Type", "text/html")
 	// w.Write(bodyBytes)
 
 }
 
-// ATM、CVS 或 BARCODE 的取號結果通知.
-func (c *Client) x() {
+// QueryTradeInfo 查詢訂單(可依特店的需求來決定是否撰寫此 API)
+func (c *Client) QueryTradeInfo() {
+	ecpayReq, _ := http.NewRequest("POST", c.endpoint+"/Cashier/QueryTradeInfo/V5", strings.NewReader(formStr))
+	ecpayReq.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+}
+
+// QueryTrade 查詢信用卡單筆明細記錄
+func (c *Client) QueryTrade() {
+	ecpayReq, _ := http.NewRequest("POST", c.endpoint+"/CreditDetail/QueryTrade/V2", strings.NewReader(formStr))
+	ecpayReq.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+}
+
+// QueryPaymentInfo 查詢 ATM/CVS/BARCODE 取號結果
+func (c *Client) QueryPaymentInfo() {
+	ecpayReq, _ := http.NewRequest("POST", c.endpoint+"/Cashier/QueryPaymentInfo", strings.NewReader(formStr))
+	ecpayReq.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+}
+
+// QueryPaymentInfo 信用卡請退款功能 (若不撰寫此 API，則可透過廠商後台功能處理)
+func (c *Client) DoAction() {
+	ecpayReq, _ := http.NewRequest("POST", c.endpoint+"/CreditDetail/DoAction", strings.NewReader(formStr))
+	ecpayReq.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+}
+
+// QueryCreditCardPeriodInfo 信用卡定期定額訂單查詢
+func (c *Client) QueryCreditCardPeriodInfo() {
+	ecpayReq, _ := http.NewRequest("POST", c.endpoint+"/Cashier/QueryCreditCardPeriodInfo", strings.NewReader(formStr))
+	ecpayReq.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+}
+
+// TradeNoAio 下載特店對帳媒體檔
+func (c *Client) TradeNoAio() {
+	ecpayReq, _ := http.NewRequest("POST", c.vendor+"/PaymentMedia/TradeNoAio", strings.NewReader(formStr))
+	ecpayReq.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+}
+
+// FundingReconDetail 下載信用卡撥款對帳資料檔
+func (c *Client) FundingReconDetail() {
+	ecpayReq, _ := http.NewRequest("POST", c.vendor+"/CreditDetail/FundingReconDetail", strings.NewReader(formStr))
+	ecpayReq.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 }
