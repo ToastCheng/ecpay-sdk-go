@@ -23,6 +23,7 @@ func TestCreateOrderAll(t *testing.T) {
 		ItemNames:         []string{"item1", "item2"},
 		TradeDesc:         "description",
 		ReturnURL:         "https://abc.com",
+		NeedExtraPaidInfo: false,
 	}
 
 	resp, err := client.AioCheckOut(order)

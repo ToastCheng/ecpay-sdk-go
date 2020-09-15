@@ -57,6 +57,7 @@ func (c *Client) AioCheckOut(order Order) ([]byte, error) {
 	form := order.ToFormData(c.merchantID)
 
 	formStr := form.Encode()
+	log.Println(formStr)
 	formStr = strings.ReplaceAll(formStr, "-", "%2d")
 	formStr = strings.ReplaceAll(formStr, "_", "%5f")
 	formStr = strings.ReplaceAll(formStr, "*", "%2a")
@@ -85,7 +86,7 @@ func (c *Client) AioCheckOut(order Order) ([]byte, error) {
 	return bodyBytes, nil
 }
 
-// QueryTradeInfo 查詢訂單(可依特店的需求來決定是否撰寫此 API)
+// QueryTradeInfo 查詢訂單
 func (c *Client) QueryTradeInfo() {
 	ecpayReq, _ := http.NewRequest("POST", c.endpoint+"/Cashier/QueryTradeInfo/V5", nil)
 	ecpayReq.Header.Add("Content-Type", "application/x-www-form-urlencoded")

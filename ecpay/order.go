@@ -1,7 +1,7 @@
 package ecpay
 
 import (
-	"ecpay/api"
+	"crypto/sha256"
 	"errors"
 	"fmt"
 	"net/url"
@@ -10,6 +10,23 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+)
+
+type PeriodType string
+
+const (
+	YEAR  PeriodType = "Y"
+	MONTH PeriodType = "M"
+	DAY   PeriodType = "D"
+)
+
+type CarrierType string
+
+const (
+	NONE      CarrierType = ""
+	MEMBER    CarrierType = "1"
+	CITIZEN   CarrierType = "2"
+	CELLPHONE CarrierType = "3"
 )
 
 type PaymentType string
@@ -35,12 +52,13 @@ const (
 type ChoosePayment string
 
 const (
-	ALL     ChoosePayment = "ALL"
-	Credit  ChoosePayment = "Credit"
-	WebATM  ChoosePayment = "WebATM"
-	ATM     ChoosePayment = "ATM"
-	CVS     ChoosePayment = "CVS"
-	BARCODE ChoosePayment = "BARCODE"
+	ALL       ChoosePayment = "ALL"
+	Credit    ChoosePayment = "Credit"
+	WebATM    ChoosePayment = "WebATM"
+	ATM       ChoosePayment = "ATM"
+	CVS       ChoosePayment = "CVS"
+	BARCODE   ChoosePayment = "BARCODE"
+	GooglePay ChoosePayment = "GooglePay"
 )
 
 // Order .
@@ -214,8 +232,62 @@ func (o *Order) ToFormData(merchantID string) url.Values {
 	ecpayReq["TradeDesc"] = []string{o.TradeDesc}
 	ecpayReq["ItemName"] = []string{strings.Join(o.ItemNames, "#")}
 	ecpayReq["ReturnURL"] = []string{o.ReturnURL}
+	if o.NeedExtraPaidInfo {
+		ecpayReq["NeedExtraPaidInfo"] = []string{"Y"}
+	} else {
+		ecpayReq["NeedExtraPaidInfo"] = []string{"N"}
+	}
+
 	ecpayReq["CheckMacValue"] = []string{
-		api.GetCheckMacValue(ecpayReq),
+		getCheckMacValue(ecpayReq),
 	}
 	return ecpayReq
+}
+
+func getCheckMacValue(req url.Values) string {
+	str := "HashKey=5294y06JbISpM5x9&"
+	if req["ChoosePayment"][0] != "" {
+		str += "ChoosePayment=" + req["ChoosePayment"][0] + "&"
+	}
+	if req["EncryptType"][0] != "" {
+		str += "EncryptType=" + req["EncryptType"][0] + "&"
+	}
+	if req["ItemName"][0] != "" {
+		str += "ItemName=" + req["ItemName"][0] + "&"
+	}
+	if req["MerchantID"][0] != "" {
+		str += "MerchantID=" + req["MerchantID"][0] + "&"
+	}
+	if req["MerchantTradeDate"][0] != "" {
+		str += "MerchantTradeDate=" + req["MerchantTradeDate"][0] + "&"
+	}
+	if req["MerchantTradeNo"][0] != "" {
+		str += "MerchantTradeNo=" + req["MerchantTradeNo"][0] + "&"
+	}
+	if req["NeedExtraPaidInfo"][0] != "" {
+		str += "NeedExtraPaidInfo=" + req["NeedExtraPaidInfo"][0] + "&"
+	}
+	if req["PaymentType"][0] != "" {
+		str += "PaymentType=" + req["PaymentType"][0] + "&"
+	}
+	if req["ReturnURL"][0] != "" {
+		str += "ReturnURL=" + req["ReturnURL"][0] + "&"
+	}
+	if req["TotalAmount"][0] != "" {
+		str += "TotalAmount=" + req["TotalAmount"][0] + "&"
+	}
+	if req["TradeDesc"][0] != "" {
+		str += "TradeDesc=" + req["TradeDesc"][0] + "&"
+	}
+	str += "HashIV=v77hoKGq4kWxNNIS"
+	str = url.QueryEscape(str)
+	str = strings.ReplaceAll(str, "%2A", "*")
+	str = strings.ReplaceAll(str, "%28", "(")
+	str = strings.ReplaceAll(str, "%29", ")")
+	str = strings.ReplaceAll(str, "%21", "!")
+	str = strings.ToLower(str)
+	str = fmt.Sprintf("%x", sha256.Sum256([]byte(str)))
+	str = strings.ToUpper(str)
+
+	return str
 }
