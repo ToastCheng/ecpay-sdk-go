@@ -6,9 +6,41 @@ import (
 	"fmt"
 	"net/url"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
+)
+
+type PaymentType string
+
+const (
+	AIO               PaymentType = "aio"
+	WebATM_TAISHIN    PaymentType = "WebATM_TAISHIN"
+	WebATM_BOT        PaymentType = "WebATM_BOT"
+	WebATM_CHINATRUST PaymentType = "WebATM_CHINATRUST"
+	WebATM_CATHAY     PaymentType = "WebATM_CATHAY"
+	WebATM_LAND       PaymentType = "WebATM_LAND"
+	WebATM_SINOPAC    PaymentType = "WebATM_SINOPAC"
+	ATM_ESUN          PaymentType = "ATM_ESUN"
+	ATM_FUBON         PaymentType = "ATM_FUBON"
+	ATM_FIRST         PaymentType = "ATM_FIRST"
+	ATM_CATHAY        PaymentType = "ATM_CATHAY"
+	CVS_CVS           PaymentType = "CVS_CVS"
+	CVS_FAMILY        PaymentType = "CVS_FAMILY"
+	CVS_IBON          PaymentType = "CVS_IBON"
+	Credit_CreditCard PaymentType = "Credit_CreditCard"
+)
+
+type ChoosePayment string
+
+const (
+	ALL     ChoosePayment = "ALL"
+	Credit  ChoosePayment = "Credit"
+	WebATM  ChoosePayment = "WebATM"
+	ATM     ChoosePayment = "ATM"
+	CVS     ChoosePayment = "CVS"
+	BARCODE ChoosePayment = "BARCODE"
 )
 
 // Order .
@@ -16,12 +48,12 @@ type Order struct {
 	MerchantTradeNo   string
 	StoreID           string
 	MerchantTradeDate string
-	PaymentType       string
+	PaymentType       PaymentType
 	TotalAmount       int
 	TradeDesc         string
-	ItemName          string
+	ItemNames         []string
 	ReturnURL         string
-	ChoosePayment     string
+	ChoosePayment     ChoosePayment
 	ClientBackURL     string
 	ItemURL           string
 	Remark            string
@@ -110,8 +142,8 @@ func (o *Order) Validate() (bool, error) {
 	if o.PaymentType == "" {
 		return false, errors.New("PaymentType should not be empty")
 	}
-	if o.ItemName == "" {
-		return false, errors.New("ItemName should not be empty")
+	if len(o.ItemNames) == 0 {
+		return false, errors.New("ItemNames should not be empty")
 	}
 	if o.TradeDesc == "" {
 		return false, errors.New("TradeDesc should not be empty")
@@ -169,7 +201,7 @@ func (o *Order) Validate() (bool, error) {
 func (o *Order) ToFormData(merchantID string) url.Values {
 	ecpayReq := map[string][]string{}
 	ecpayReq["MerchantID"] = []string{merchantID}
-	ecpayReq["ChoosePayment"] = []string{o.ChoosePayment}
+	ecpayReq["ChoosePayment"] = []string{string(o.ChoosePayment)}
 	ecpayReq["EncryptType"] = []string{"1"}
 	ecpayReq["MerchantTradeNo"] = []string{
 		fmt.Sprintf("%s%d", uuid.New().String()[:5], time.Now().Unix()),
@@ -177,10 +209,10 @@ func (o *Order) ToFormData(merchantID string) url.Values {
 	ecpayReq["MerchantTradeDate"] = []string{
 		time.Now().Format("2006/01/02 15:04:05"),
 	}
-	ecpayReq["PaymentType"] = []string{"aio"}
+	ecpayReq["PaymentType"] = []string{string(o.PaymentType)}
 	ecpayReq["TotalAmount"] = []string{strconv.Itoa(o.TotalAmount)}
 	ecpayReq["TradeDesc"] = []string{o.TradeDesc}
-	ecpayReq["ItemName"] = []string{o.ItemName}
+	ecpayReq["ItemName"] = []string{strings.Join(o.ItemNames, "#")}
 	ecpayReq["ReturnURL"] = []string{o.ReturnURL}
 	ecpayReq["CheckMacValue"] = []string{
 		api.GetCheckMacValue(ecpayReq),
