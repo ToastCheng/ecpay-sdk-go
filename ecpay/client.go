@@ -11,6 +11,8 @@ import (
 // Client implements client for making ECPay api.
 type Client struct {
 	merchantID string
+	hashKey    string
+	hashIV     string
 	endpoint   string
 	vendor     string
 	httpClient *http.Client
@@ -28,9 +30,11 @@ func WithSandbox(client *Client) error {
 }
 
 // NewClient .
-func NewClient(merchantID string, options ...ClientOption) (*Client, error) {
+func NewClient(merchantID, hashKey, hashIV string, options ...ClientOption) (*Client, error) {
 	c := &Client{
 		merchantID: merchantID,
+		hashKey:    hashKey,
+		hashIV:     hashIV,
 		endpoint:   "https://payment.ecpay.com.tw",
 		vendor:     "https://vendor.ecpay.com.tw",
 		httpClient: &http.Client{},
@@ -44,8 +48,8 @@ func NewClient(merchantID string, options ...ClientOption) (*Client, error) {
 	return c, nil
 }
 
-// Order .
-func (c *Client) Order() ([]byte, error) {
+// AioCheckOut .
+func (c *Client) CreateOrder() ([]byte, error) {
 
 	form := api.NewECPayOrderFormData(api.OrderRequest{})
 	formStr := form.Encode()
