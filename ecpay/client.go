@@ -57,7 +57,6 @@ func (c *Client) AioCheckOut(order Order) ([]byte, error) {
 	form := order.ToFormData(c.merchantID)
 
 	formStr := form.Encode()
-	log.Println(formStr)
 	formStr = strings.ReplaceAll(formStr, "-", "%2d")
 	formStr = strings.ReplaceAll(formStr, "_", "%5f")
 	formStr = strings.ReplaceAll(formStr, "*", "%2a")
