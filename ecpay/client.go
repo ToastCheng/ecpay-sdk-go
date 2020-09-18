@@ -54,6 +54,17 @@ func (c *Client) AioCheckOut(order Order) ([]byte, error) {
 		return nil, err
 	}
 
+	cp := order.ChoosePayment
+	if cp == ALL || cp == ATM {
+
+	}
+	if cp == ALL || cp == CVS || cp == BARCODE {
+
+	}
+	if cp == ALL || cp == CREDIT {
+
+	}
+
 	form := order.ToFormData(c.merchantID)
 
 	formStr := form.Encode()

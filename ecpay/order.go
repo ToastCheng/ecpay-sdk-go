@@ -53,13 +53,13 @@ const (
 type ChoosePayment string
 
 const (
-	ALL       ChoosePayment = "ALL"
-	Credit    ChoosePayment = "Credit"
-	WebATM    ChoosePayment = "WebATM"
-	ATM       ChoosePayment = "ATM"
-	CVS       ChoosePayment = "CVS"
-	BARCODE   ChoosePayment = "BARCODE"
-	GooglePay ChoosePayment = "GooglePay"
+	ALL        ChoosePayment = "ALL"
+	CREDIT     ChoosePayment = "Credit"
+	WEB_ATM    ChoosePayment = "WebATM"
+	ATM        ChoosePayment = "ATM"
+	CVS        ChoosePayment = "CVS"
+	BARCODE    ChoosePayment = "BARCODE"
+	GOOGLE_PAY ChoosePayment = "GooglePay"
 )
 
 // Order .
@@ -89,7 +89,45 @@ type Order struct {
 	CustomField4      string
 	EncryptType       string
 
-	// invoice
+	atm        *AtmParam
+	cvsBarcode *CvsOrBarcodeParam
+	credit     *CreditParam
+	invoice    *InvoiceParam
+}
+
+type AtmParam struct {
+	ExpireDate        string
+	PaymentInfoURL    string
+	ClientRedirectURL string
+}
+
+type CvsOrBarcodeParam struct {
+	StoreExpireDate   string
+	Desc1             string
+	Desc2             string
+	Desc3             string
+	Desc4             string
+	PaymentInfoURL    string
+	ClientRedirectURL string
+}
+
+type CreditParam struct {
+	BindingCard      string
+	MerchantMemberID string
+	Language         string
+
+	Redeem            string
+	UnionPay          string
+	CreditInstallment string
+
+	PeriodAmount    int
+	PeriodType      string
+	Frequency       int
+	ExecTimes       int
+	PeriodReturnURL string
+}
+
+type InvoiceParam struct {
 	RelateNumber       string
 	CustomerID         string
 	CustomerIdentifier string
@@ -112,32 +150,6 @@ type Order struct {
 	InvoiceRemark      string
 	DelayDay           string
 	InvType            string
-}
-
-type ExtendParams1 struct {
-	ExpireDate        string
-	PaymentInfoURL    string
-	ClientRedirectURL string
-}
-
-type ExtendParams2 struct {
-	StoreExpireDate   string
-	Desc1             string
-	Desc2             string
-	Desc3             string
-	Desc4             string
-	PaymentInfoURL    string
-	ClientRedirectURL string
-}
-
-type ExtendParams3 struct {
-	BindingCard      string
-	MerchantMemberID string
-}
-
-type ExtendParams4 struct {
-	Redeem   string
-	UnionPay string
 }
 
 // Validate validate if the struct is valid.
@@ -171,42 +183,68 @@ func (o *Order) Validate() (bool, error) {
 		return false, errors.New("ReturnURL should not be empty")
 	}
 
-	if ci := o.CustomerIdentifier; ci != "" {
+	// check length.
+	if len(o.MerchantTradeNo) > 10 {
+		return false, errors.New("MerchantTradeNo should not exceed 10")
+	}
+	if len(o.StoreID) > 20 {
+		return false, errors.New("StoreID should not exceed 20")
+	}
+	if len(o.TradeDesc) > 200 {
+		return false, errors.New("TradeDesc should not exceed 200")
+	}
+	if len(o.ItemNames) > 200 {
+		return false, errors.New("ItemName should not exceed 200")
+	}
+	if len(o.ReturnURL) > 200 {
+		return false, errors.New("ReturnURL should not exceed 200")
+	}
+	if len(o.ClientBackURL) > 200 {
+		return false, errors.New("ClientBackURL should not exceed 200")
+	}
+	if len(o.ItemURL) > 200 {
+		return false, errors.New("ItemURL should not exceed 200")
+	}
+	if len(o.OrderResultURL) > 200 {
+		return false, errors.New("OrderResultURL should not exceed 200")
+	}
+
+	if ci := o.invoice.CustomerIdentifier; ci != "" {
 		if len(ci) != 8 {
 			return false, errors.New("CustomerIdentifier has to fill fixed length of 8 digits")
 		}
-		if o.CarruerType == "" {
+		if o.invoice.CarruerType == "" {
 			return false, errors.New("CarruerType does not fill any value, when CustomerIdentifier have value")
 		}
-		if !o.Print {
+		if !o.invoice.Print {
 			return false, errors.New("Print has to be true, when CustomerIdentifier have value")
 		}
-		if o.Donation {
+		if o.invoice.Donation {
 			return false, errors.New("Donation has to be false, when CustomerIdentifier have value")
 		}
 	}
 
-	if o.Print {
-		if o.CustomerName == "" {
+	if o.invoice.Print {
+		if o.invoice.CustomerName == "" {
 			return false, errors.New("CustomerName should not be empty if Print is true")
 		}
-		if o.CustomerAddr == "" {
+		if o.invoice.CustomerAddr == "" {
 			return false, errors.New("CustomerAddr should not be empty if Print is true")
 		}
-		if o.CarruerType == "" {
+		if o.invoice.CarruerType == "" {
 			return false, errors.New("CarruerType should not be empty if Print is true")
 		}
 	}
 
-	if o.CustomerEmail == "" && o.CustomerPhone == "" {
+	if o.invoice.CustomerEmail == "" && o.invoice.CustomerPhone == "" {
 		return false, errors.New("CustomerPhone should not be empty if CustomerEmail is empty")
 	}
 
-	if o.Donation {
-		if o.Print {
+	if o.invoice.Donation {
+		if o.invoice.Print {
 			return false, errors.New("Print should be false if Donation is set to true")
 		}
-		if lc := o.LoveCode; lc == "" {
+		if lc := o.invoice.LoveCode; lc == "" {
 			return false, errors.New("LoveCode should not be empty if Donation is set to true")
 		} else if len(lc) < 3 || len(lc) > 7 {
 			return false, errors.New("LoveCode should be a 3-7 digit number")
