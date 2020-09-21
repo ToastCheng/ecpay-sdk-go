@@ -1,12 +1,13 @@
 package ecpay
 
 import (
-	"ecpay/order"
-	"ecpay/order/payment"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
+
+	"github.com/toastcheng/ecpay-sdk-go/ecpay/order"
+	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/payment"
 )
 
 // Client implements client for making ECPay api.

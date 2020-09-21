@@ -2,11 +2,12 @@ package ecpay
 
 import (
 	"bytes"
-	"ecpay/order"
-	"ecpay/order/payment"
 	"log"
 	"strings"
 	"testing"
+
+	"github.com/toastcheng/ecpay-sdk-go/ecpay/order"
+	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/payment"
 )
 
 func getTestClient() *Client {

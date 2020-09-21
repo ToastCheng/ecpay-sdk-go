@@ -2,9 +2,6 @@ package order
 
 import (
 	"crypto/sha256"
-	"ecpay/order/carrier"
-	"ecpay/order/payment"
-	"ecpay/order/period"
 	"errors"
 	"fmt"
 	"net/url"
@@ -12,6 +9,11 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/payment"
+	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/period"
+
+	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/carrier"
 
 	"github.com/google/uuid"
 )
