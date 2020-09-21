@@ -10,13 +10,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/tax"
-	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/unionpay"
-
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/carrier"
+	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/donation"
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/payment"
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/period"
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/subpayment"
+	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/tax"
+	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/unionpay"
 
 	"github.com/google/uuid"
 )
@@ -97,7 +97,7 @@ type CreditParam struct {
 type InvoiceParam struct {
 	RelateNumber     string
 	TaxType          tax.Tax
-	Donation         bool
+	Donation         donation.Donation
 	Print            bool
 	InvoiceItemName  string
 	InvoiceItemCount string
@@ -187,7 +187,7 @@ func (o *Order) Validate() (bool, error) {
 		if !o.Invoice.Print {
 			return false, errors.New("Print has to be true, when CustomerIdentifier have value")
 		}
-		if o.Invoice.Donation {
+		if o.Invoice.Donation == donation.No {
 			return false, errors.New("Donation has to be false, when CustomerIdentifier have value")
 		}
 	}
@@ -208,7 +208,7 @@ func (o *Order) Validate() (bool, error) {
 		return false, errors.New("CustomerPhone should not be empty if CustomerEmail is empty")
 	}
 
-	if o.Invoice.Donation {
+	if o.Invoice.Donation == donation.Yes {
 		if o.Invoice.Print {
 			return false, errors.New("Print should be false if Donation is set to true")
 		}
@@ -279,11 +279,7 @@ func (o *Order) ToFormData(merchantID string) url.Values {
 		ecpayReq["TaxType"] = []string{string(o.Invoice.TaxType)}
 		ecpayReq["DelayDay"] = []string{o.Invoice.DelayDay}
 		ecpayReq["InvType"] = []string{o.Invoice.InvType}
-		if o.Invoice.Donation {
-			ecpayReq["Donation"] = []string{"1"}
-		} else {
-			ecpayReq["Donation"] = []string{"0"}
-		}
+		ecpayReq["Donation"] = []string{string(o.Invoice.Donation)}
 		if o.Invoice.Print {
 			ecpayReq["Print"] = []string{"1"}
 		} else {
