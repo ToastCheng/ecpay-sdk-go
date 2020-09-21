@@ -24,7 +24,7 @@ func TestCreateOrderAll(t *testing.T) {
 		MerchantTradeNo:   "NO123",
 		MerchantTradeDate: "2020/10/10 10:10:10",
 		PlatformID:        "3002599",
-		ChoosePayment:     payment.ALL,
+		ChoosePayment:     payment.All,
 		TotalAmount:       100,
 		PaymentType:       payment.AIO,
 		ItemNames:         []string{"item1", "item2"},
@@ -34,6 +34,7 @@ func TestCreateOrderAll(t *testing.T) {
 		Invoice: &order.InvoiceParam{
 			CustomerEmail: "abc@gmail.com",
 		},
+		Credit: &order.CreditParam{},
 	}
 
 	resp, err := client.AioCheckOut(order)

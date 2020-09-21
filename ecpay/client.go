@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/order"
-	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/payment"
 )
 
 // Client implements client for making ECPay api.
@@ -21,17 +20,17 @@ type Client struct {
 	options    ClientOption
 }
 
-// ClientOption .
+// ClientOption extra option to configure the ECPay client.
 type ClientOption func(*Client) error
 
-// WithSandbox .
+// WithSandbox configures the client, making it sending request to sandbox environment.
 func WithSandbox(client *Client) error {
 	client.endpoint = "https://payment-stage.ecpay.com.tw"
 	client.vendor = "https://vendor-stage.ecpay.com.tw"
 	return nil
 }
 
-// NewClient .
+// NewClient create a client for communicating to ECPay server.
 func NewClient(merchantID, hashKey, hashIV string, options ...ClientOption) (*Client, error) {
 	c := &Client{
 		merchantID: merchantID,
@@ -50,22 +49,11 @@ func NewClient(merchantID, hashKey, hashIV string, options ...ClientOption) (*Cl
 	return c, nil
 }
 
-// AioCheckOut .
+// AioCheckOut sends an order to ECPay server.
 func (c *Client) AioCheckOut(order order.Order) ([]byte, error) {
 
 	if ok, err := order.Validate(); !ok {
 		return nil, err
-	}
-
-	cp := order.ChoosePayment
-	if cp == payment.ALL || cp == payment.ATM {
-
-	}
-	if cp == payment.ALL || cp == payment.CVS || cp == payment.BARCODE {
-
-	}
-	if cp == payment.ALL || cp == payment.CREDIT {
-
 	}
 
 	form := order.ToFormData(c.merchantID)

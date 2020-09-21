@@ -10,6 +10,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/tax"
+	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/unionpay"
+
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/carrier"
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/payment"
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/period"
@@ -75,10 +78,14 @@ type CreditParam struct {
 	MerchantMemberID string
 	Language         string
 
-	Redeem            string
-	UnionPay          string
+	// 一次付清
+	Redeem   bool
+	UnionPay unionpay.UnionPay
+
+	// 分期付款
 	CreditInstallment string
 
+	// 定期定額
 	PeriodAmount    int
 	PeriodType      period.Period
 	Frequency       int
@@ -88,7 +95,15 @@ type CreditParam struct {
 
 // InvoiceParam defines the parameters for invoice specific settings.
 type InvoiceParam struct {
-	RelateNumber       string
+	RelateNumber     string
+	TaxType          tax.Tax
+	Donation         bool
+	Print            bool
+	InvoiceItemName  string
+	InvoiceItemCount string
+	DelayDay         string
+	InvType          string
+
 	CustomerID         string
 	CustomerIdentifier string
 	CustomerName       string
@@ -96,20 +111,13 @@ type InvoiceParam struct {
 	CustomerPhone      string
 	CustomerEmail      string
 	ClearanceMark      string
-	TaxType            string
-	CarruerType        carrier.CarrierType
-	CarruerNum         string
-	Donation           bool
+	CarrierType        carrier.CarrierType
+	CarrierNum         string
 	LoveCode           string
-	Print              bool
-	InvoiceItemName    string
-	InvoiceItemCount   string
 	InvoiceItemWord    string
 	InvoiceItemPrice   string
 	InvoiceItemTaxType string
 	InvoiceRemark      string
-	DelayDay           string
-	InvType            string
 }
 
 // Validate validate if the order struct is valid.
@@ -173,7 +181,7 @@ func (o *Order) Validate() (bool, error) {
 		if len(ci) != 8 {
 			return false, errors.New("CustomerIdentifier has to fill fixed length of 8 digits")
 		}
-		if o.Invoice.CarruerType == "" {
+		if o.Invoice.CarrierType == "" {
 			return false, errors.New("CarruerType does not fill any value, when CustomerIdentifier have value")
 		}
 		if !o.Invoice.Print {
@@ -191,7 +199,7 @@ func (o *Order) Validate() (bool, error) {
 		if o.Invoice.CustomerAddr == "" {
 			return false, errors.New("CustomerAddr should not be empty if Print is true")
 		}
-		if o.Invoice.CarruerType == "" {
+		if o.Invoice.CarrierType == "" {
 			return false, errors.New("CarruerType should not be empty if Print is true")
 		}
 	}
@@ -216,6 +224,7 @@ func (o *Order) Validate() (bool, error) {
 
 // ToFormData transform the Order struct to url.Values
 func (o *Order) ToFormData(merchantID string) url.Values {
+	o.Validate()
 	ecpayReq := map[string][]string{}
 	ecpayReq["MerchantID"] = []string{merchantID}
 	ecpayReq["ChoosePayment"] = []string{string(o.ChoosePayment)}
@@ -229,17 +238,83 @@ func (o *Order) ToFormData(merchantID string) url.Values {
 	ecpayReq["PaymentType"] = []string{string(o.PaymentType)}
 	ecpayReq["TotalAmount"] = []string{strconv.Itoa(o.TotalAmount)}
 	ecpayReq["TradeDesc"] = []string{o.TradeDesc}
-	ecpayReq["ItemName"] = []string{strings.Join(o.ItemNames, "#")}
 	ecpayReq["ReturnURL"] = []string{o.ReturnURL}
+	ecpayReq["ItemName"] = []string{strings.Join(o.ItemNames, "#")}
 	if o.NeedExtraPaidInfo {
 		ecpayReq["NeedExtraPaidInfo"] = []string{"Y"}
 	} else {
 		ecpayReq["NeedExtraPaidInfo"] = []string{"N"}
 	}
+	if o.InvoiceMark {
+		ecpayReq["InvoiceMark"] = []string{"Y"}
+	} else {
+		ecpayReq["InvoiceMark"] = []string{"N"}
+	}
+
+	cp := o.ChoosePayment
+	if cp == payment.All || cp == payment.Credit {
+		// 一次付清
+		if o.Credit.Redeem {
+			if o.Credit.Redeem {
+				ecpayReq["Redeem"] = []string{"Y"}
+			} else {
+				ecpayReq["Redeem"] = []string{"N"}
+			}
+			ecpayReq["UnionPay"] = []string{string(o.Credit.UnionPay)}
+
+		} else if o.Credit.CreditInstallment != "" {
+			// 分期付款
+
+		} else if o.Credit.PeriodAmount != 0 ||
+			// 定期定額
+			o.Credit.PeriodType == period.DAY ||
+			o.Credit.Frequency != 0 ||
+			o.Credit.ExecTimes != 0 ||
+			o.Credit.PeriodReturnURL != "" {
+		}
+	}
+
+	if o.InvoiceMark {
+		ecpayReq["RelateNumber"] = []string{o.Invoice.RelateNumber}
+		ecpayReq["TaxType"] = []string{string(o.Invoice.TaxType)}
+		ecpayReq["DelayDay"] = []string{o.Invoice.DelayDay}
+		ecpayReq["InvType"] = []string{o.Invoice.InvType}
+		if o.Invoice.Donation {
+			ecpayReq["Donation"] = []string{"1"}
+		} else {
+			ecpayReq["Donation"] = []string{"0"}
+		}
+		if o.Invoice.Print {
+			ecpayReq["Print"] = []string{"1"}
+		} else {
+			ecpayReq["Print"] = []string{"0"}
+		}
+
+		ecpayReq["CustomerID"] = []string{o.Invoice.CustomerID}
+		ecpayReq["CustomerIdentifier"] = []string{o.Invoice.CustomerIdentifier}
+		ecpayReq["CustomerName"] = []string{o.Invoice.CustomerName}
+		ecpayReq["CustomerAddr"] = []string{o.Invoice.CustomerAddr}
+		ecpayReq["CustomerPhone"] = []string{o.Invoice.CustomerPhone}
+		ecpayReq["CustomerEmail"] = []string{o.Invoice.CustomerEmail}
+		ecpayReq["ClearanceMark"] = []string{o.Invoice.ClearanceMark}
+		ecpayReq["LoveCode"] = []string{o.Invoice.LoveCode}
+		ecpayReq["InvoiceItemTaxType"] = []string{string(o.Invoice.InvoiceItemTaxType)}
+		ecpayReq["InvoiceRemark"] = []string{o.Invoice.InvoiceRemark}
+
+		// might be a typo in ECPay server.
+		ecpayReq["CarruerType"] = []string{string(o.Invoice.CarrierType)}
+		ecpayReq["CarruerNum"] = []string{o.Invoice.CarrierNum}
+		// TODO: use '|' to seperate multiple items.
+		ecpayReq["InvoiceItemName"] = []string{o.Invoice.InvoiceItemName}
+		ecpayReq["InvoiceItemCount"] = []string{o.Invoice.InvoiceItemCount}
+		ecpayReq["InvoiceItemWord"] = []string{o.Invoice.InvoiceItemWord}
+		ecpayReq["InvoiceItemPrice"] = []string{o.Invoice.InvoiceItemPrice}
+	}
 
 	ecpayReq["CheckMacValue"] = []string{
 		getCheckMacValue(ecpayReq),
 	}
+
 	return ecpayReq
 }
 
