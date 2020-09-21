@@ -1,9 +1,9 @@
 package period
 
-type PeriodType string
+type Period string
 
 const (
-	YEAR  PeriodType = "Y"
-	MONTH PeriodType = "M"
-	DAY   PeriodType = "D"
+	YEAR  Period = "Y"
+	MONTH Period = "M"
+	DAY   Period = "D"
 )

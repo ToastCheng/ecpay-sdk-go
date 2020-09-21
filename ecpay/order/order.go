@@ -10,30 +10,30 @@ import (
 	"strings"
 	"time"
 
+	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/carrier"
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/payment"
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/period"
-
-	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/carrier"
+	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/subpayment"
 
 	"github.com/google/uuid"
 )
 
-// Order .
+// Order defines the structure of an order.
 type Order struct {
 	MerchantTradeNo   string
 	StoreID           string
 	MerchantTradeDate string
-	PaymentType       payment.PaymentType
 	TotalAmount       int
 	TradeDesc         string
 	ItemNames         []string
-	ReturnURL         string
-	ChoosePayment     payment.ChoosePaymentType
-	ClientBackURL     string
 	ItemURL           string
-	Remark            string
-	ChooseSubPayment  string
+	ReturnURL         string
+	ClientBackURL     string
 	OrderResultURL    string
+	PaymentType       payment.PaymentType
+	ChoosePayment     payment.ChoosePaymentType
+	ChooseSubPayment  subpayment.ChooseSubpaymentType
+	Remark            string
 	NeedExtraPaidInfo bool
 	DeviceSource      string
 	IgnorePayment     string
@@ -45,19 +45,21 @@ type Order struct {
 	CustomField4      string
 	EncryptType       string
 
-	Atm        *AtmParam
-	CvsBarcode *CvsOrBarcodeParam
+	ATM        *ATMParam
+	CVSBarcode *CVSOrBarcodeParam
 	Credit     *CreditParam
 	Invoice    *InvoiceParam
 }
 
-type AtmParam struct {
+// ATMParam defines the parameters tailored for ATM transaction.
+type ATMParam struct {
 	ExpireDate        string
 	PaymentInfoURL    string
 	ClientRedirectURL string
 }
 
-type CvsOrBarcodeParam struct {
+// CVSOrBarcodeParam defines the parameters tailored for CVS or bar code transaction.
+type CVSOrBarcodeParam struct {
 	StoreExpireDate   string
 	Desc1             string
 	Desc2             string
@@ -67,6 +69,7 @@ type CvsOrBarcodeParam struct {
 	ClientRedirectURL string
 }
 
+// CreditParam defines the parameters tailored for credit card transaction.
 type CreditParam struct {
 	BindingCard      string
 	MerchantMemberID string
@@ -77,12 +80,13 @@ type CreditParam struct {
 	CreditInstallment string
 
 	PeriodAmount    int
-	PeriodType      period.PeriodType
+	PeriodType      period.Period
 	Frequency       int
 	ExecTimes       int
 	PeriodReturnURL string
 }
 
+// InvoiceParam defines the parameters for invoice specific settings.
 type InvoiceParam struct {
 	RelateNumber       string
 	CustomerID         string
@@ -108,7 +112,7 @@ type InvoiceParam struct {
 	InvType            string
 }
 
-// Validate validate if the struct is valid.
+// Validate validate if the order struct is valid.
 func (o *Order) Validate() (bool, error) {
 	// check null.
 	if o.MerchantTradeNo == "" {
@@ -241,7 +245,7 @@ func (o *Order) ToFormData(merchantID string) url.Values {
 
 func getCheckMacValue(req url.Values) string {
 	keys := []string{}
-	for k, _ := range req {
+	for k := range req {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
