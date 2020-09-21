@@ -2,6 +2,8 @@ package ecpay
 
 import (
 	"bytes"
+	"ecpay/order"
+	"ecpay/order/payment"
 	"log"
 	"strings"
 	"testing"
@@ -17,18 +19,18 @@ func getTestClient() *Client {
 
 func TestCreateOrderAll(t *testing.T) {
 	client := getTestClient()
-	order := Order{
+	order := order.Order{
 		MerchantTradeNo:   "NO123",
 		MerchantTradeDate: "2020/10/10 10:10:10",
 		PlatformID:        "3002599",
-		ChoosePayment:     ALL,
+		ChoosePayment:     payment.ALL,
 		TotalAmount:       100,
-		PaymentType:       AIO,
+		PaymentType:       payment.AIO,
 		ItemNames:         []string{"item1", "item2"},
 		TradeDesc:         "description",
 		ReturnURL:         "https://abc.com",
 		NeedExtraPaidInfo: false,
-		invoice: &InvoiceParam{
+		Invoice: &order.InvoiceParam{
 			CustomerEmail: "abc@gmail.com",
 		},
 	}

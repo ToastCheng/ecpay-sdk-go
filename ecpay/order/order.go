@@ -1,7 +1,10 @@
-package ecpay
+package order
 
 import (
 	"crypto/sha256"
+	"ecpay/order/carrier"
+	"ecpay/order/payment"
+	"ecpay/order/period"
 	"errors"
 	"fmt"
 	"net/url"
@@ -13,66 +16,17 @@ import (
 	"github.com/google/uuid"
 )
 
-type PeriodType string
-
-const (
-	YEAR  PeriodType = "Y"
-	MONTH PeriodType = "M"
-	DAY   PeriodType = "D"
-)
-
-type CarrierType string
-
-const (
-	NONE      CarrierType = ""
-	MEMBER    CarrierType = "1"
-	CITIZEN   CarrierType = "2"
-	CELLPHONE CarrierType = "3"
-)
-
-type PaymentType string
-
-const (
-	AIO               PaymentType = "aio"
-	WebATM_TAISHIN    PaymentType = "WebATM_TAISHIN"
-	WebATM_BOT        PaymentType = "WebATM_BOT"
-	WebATM_CHINATRUST PaymentType = "WebATM_CHINATRUST"
-	WebATM_CATHAY     PaymentType = "WebATM_CATHAY"
-	WebATM_LAND       PaymentType = "WebATM_LAND"
-	WebATM_SINOPAC    PaymentType = "WebATM_SINOPAC"
-	ATM_ESUN          PaymentType = "ATM_ESUN"
-	ATM_FUBON         PaymentType = "ATM_FUBON"
-	ATM_FIRST         PaymentType = "ATM_FIRST"
-	ATM_CATHAY        PaymentType = "ATM_CATHAY"
-	CVS_CVS           PaymentType = "CVS_CVS"
-	CVS_FAMILY        PaymentType = "CVS_FAMILY"
-	CVS_IBON          PaymentType = "CVS_IBON"
-	Credit_CreditCard PaymentType = "Credit_CreditCard"
-)
-
-type ChoosePayment string
-
-const (
-	ALL        ChoosePayment = "ALL"
-	CREDIT     ChoosePayment = "Credit"
-	WEB_ATM    ChoosePayment = "WebATM"
-	ATM        ChoosePayment = "ATM"
-	CVS        ChoosePayment = "CVS"
-	BARCODE    ChoosePayment = "BARCODE"
-	GOOGLE_PAY ChoosePayment = "GooglePay"
-)
-
 // Order .
 type Order struct {
 	MerchantTradeNo   string
 	StoreID           string
 	MerchantTradeDate string
-	PaymentType       PaymentType
+	PaymentType       payment.PaymentType
 	TotalAmount       int
 	TradeDesc         string
 	ItemNames         []string
 	ReturnURL         string
-	ChoosePayment     ChoosePayment
+	ChoosePayment     payment.ChoosePaymentType
 	ClientBackURL     string
 	ItemURL           string
 	Remark            string
@@ -89,10 +43,10 @@ type Order struct {
 	CustomField4      string
 	EncryptType       string
 
-	atm        *AtmParam
-	cvsBarcode *CvsOrBarcodeParam
-	credit     *CreditParam
-	invoice    *InvoiceParam
+	Atm        *AtmParam
+	CvsBarcode *CvsOrBarcodeParam
+	Credit     *CreditParam
+	Invoice    *InvoiceParam
 }
 
 type AtmParam struct {
@@ -121,7 +75,7 @@ type CreditParam struct {
 	CreditInstallment string
 
 	PeriodAmount    int
-	PeriodType      string
+	PeriodType      period.PeriodType
 	Frequency       int
 	ExecTimes       int
 	PeriodReturnURL string
@@ -137,7 +91,7 @@ type InvoiceParam struct {
 	CustomerEmail      string
 	ClearanceMark      string
 	TaxType            string
-	CarruerType        string
+	CarruerType        carrier.CarrierType
 	CarruerNum         string
 	Donation           bool
 	LoveCode           string
@@ -209,42 +163,42 @@ func (o *Order) Validate() (bool, error) {
 		return false, errors.New("OrderResultURL should not exceed 200")
 	}
 
-	if ci := o.invoice.CustomerIdentifier; ci != "" {
+	if ci := o.Invoice.CustomerIdentifier; ci != "" {
 		if len(ci) != 8 {
 			return false, errors.New("CustomerIdentifier has to fill fixed length of 8 digits")
 		}
-		if o.invoice.CarruerType == "" {
+		if o.Invoice.CarruerType == "" {
 			return false, errors.New("CarruerType does not fill any value, when CustomerIdentifier have value")
 		}
-		if !o.invoice.Print {
+		if !o.Invoice.Print {
 			return false, errors.New("Print has to be true, when CustomerIdentifier have value")
 		}
-		if o.invoice.Donation {
+		if o.Invoice.Donation {
 			return false, errors.New("Donation has to be false, when CustomerIdentifier have value")
 		}
 	}
 
-	if o.invoice.Print {
-		if o.invoice.CustomerName == "" {
+	if o.Invoice.Print {
+		if o.Invoice.CustomerName == "" {
 			return false, errors.New("CustomerName should not be empty if Print is true")
 		}
-		if o.invoice.CustomerAddr == "" {
+		if o.Invoice.CustomerAddr == "" {
 			return false, errors.New("CustomerAddr should not be empty if Print is true")
 		}
-		if o.invoice.CarruerType == "" {
+		if o.Invoice.CarruerType == "" {
 			return false, errors.New("CarruerType should not be empty if Print is true")
 		}
 	}
 
-	if o.invoice.CustomerEmail == "" && o.invoice.CustomerPhone == "" {
+	if o.Invoice.CustomerEmail == "" && o.Invoice.CustomerPhone == "" {
 		return false, errors.New("CustomerPhone should not be empty if CustomerEmail is empty")
 	}
 
-	if o.invoice.Donation {
-		if o.invoice.Print {
+	if o.Invoice.Donation {
+		if o.Invoice.Print {
 			return false, errors.New("Print should be false if Donation is set to true")
 		}
-		if lc := o.invoice.LoveCode; lc == "" {
+		if lc := o.Invoice.LoveCode; lc == "" {
 			return false, errors.New("LoveCode should not be empty if Donation is set to true")
 		} else if len(lc) < 3 || len(lc) > 7 {
 			return false, errors.New("LoveCode should be a 3-7 digit number")

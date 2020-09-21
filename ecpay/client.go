@@ -1,6 +1,8 @@
 package ecpay
 
 import (
+	"ecpay/order"
+	"ecpay/order/payment"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -48,20 +50,20 @@ func NewClient(merchantID, hashKey, hashIV string, options ...ClientOption) (*Cl
 }
 
 // AioCheckOut .
-func (c *Client) AioCheckOut(order Order) ([]byte, error) {
+func (c *Client) AioCheckOut(order order.Order) ([]byte, error) {
 
 	if ok, err := order.Validate(); !ok {
 		return nil, err
 	}
 
 	cp := order.ChoosePayment
-	if cp == ALL || cp == ATM {
+	if cp == payment.ALL || cp == payment.ATM {
 
 	}
-	if cp == ALL || cp == CVS || cp == BARCODE {
+	if cp == payment.ALL || cp == payment.CVS || cp == payment.BARCODE {
 
 	}
-	if cp == ALL || cp == CREDIT {
+	if cp == payment.ALL || cp == payment.CREDIT {
 
 	}
 
