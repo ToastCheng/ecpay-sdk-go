@@ -4,9 +4,11 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/order"
+	"github.com/toastcheng/ecpay-sdk-go/ecpay/utils"
 )
 
 // Client implements client for making ECPay api.
@@ -57,6 +59,7 @@ func (c *Client) AioCheckOut(order order.Order) ([]byte, error) {
 	}
 
 	form := order.ToFormData(c.merchantID)
+	form["CheckMacValue"] = []string{utils.GetCheckMacValue(form)}
 
 	formStr := form.Encode()
 	formStr = strings.ReplaceAll(formStr, "-", "%2d")
@@ -89,7 +92,34 @@ func (c *Client) AioCheckOut(order order.Order) ([]byte, error) {
 
 // QueryTradeInfo 查詢訂單
 func (c *Client) QueryTradeInfo() {
-	ecpayReq, _ := http.NewRequest("POST", c.endpoint+"/Cashier/QueryTradeInfo/V5", nil)
+
+	// 'MerchantID': {'type': str, 'required': True, 'max': 10},
+	// 'MerchantTradeNo': {'type': str, 'required': True, 'max': 20},
+	// 'TimeStamp': {'type': int, 'required': True, },
+	// 'PlatformID': {'type': str, 'required': False, 'max': 10},
+
+	form := url.Values{}
+	form["MerchantID"] = []string{"1234567890"}
+	form["MerchantTradeNo"] = []string{"12345678901234567890"}
+	form["TimeStamp"] = []string{"1234567890"}
+	form["PlatformID"] = []string{"1234567890"}
+
+	form["CheckMacValue"] = []string{utils.GetCheckMacValue(form)}
+	formStr := form.Encode()
+	formStr = strings.ReplaceAll(formStr, "-", "%2d")
+	formStr = strings.ReplaceAll(formStr, "_", "%5f")
+	formStr = strings.ReplaceAll(formStr, "*", "%2a")
+	formStr = strings.ReplaceAll(formStr, "(", "%28")
+	formStr = strings.ReplaceAll(formStr, ")", "%29")
+	formStr = strings.ReplaceAll(formStr, "+", "%20")
+	ecpayReq, _ := http.NewRequest("POST", c.endpoint+"/Cashier/QueryTradeInfo/V5", strings.NewReader(formStr))
+	ecpayReq.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+}
+
+// QueryCreditCardPeriodInfo 信用卡定期定額訂單查詢
+func (c *Client) QueryCreditCardPeriodInfo() {
+	ecpayReq, _ := http.NewRequest("POST", c.endpoint+"/Cashier/QueryCreditCardPeriodInfo", nil)
 	ecpayReq.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 }
@@ -111,13 +141,6 @@ func (c *Client) QueryPaymentInfo() {
 // QueryPaymentInfo 信用卡請退款功能 (若不撰寫此 API，則可透過廠商後台功能處理)
 func (c *Client) DoAction() {
 	ecpayReq, _ := http.NewRequest("POST", c.endpoint+"/CreditDetail/DoAction", nil)
-	ecpayReq.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-
-}
-
-// QueryCreditCardPeriodInfo 信用卡定期定額訂單查詢
-func (c *Client) QueryCreditCardPeriodInfo() {
-	ecpayReq, _ := http.NewRequest("POST", c.endpoint+"/Cashier/QueryCreditCardPeriodInfo", nil)
 	ecpayReq.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 }
