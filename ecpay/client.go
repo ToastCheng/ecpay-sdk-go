@@ -2,11 +2,10 @@ package ecpay
 
 import (
 	"net/http"
-	"net/url"
-	"strings"
+
+	"github.com/toastcheng/ecpay-sdk-go/ecpay/trade"
 
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/order"
-	"github.com/toastcheng/ecpay-sdk-go/ecpay/utils"
 )
 
 // Client implements client for making ECPay api.
@@ -51,37 +50,38 @@ func NewClient(merchantID, hashKey, hashIV string, options ...ClientOption) (*Cl
 
 // AioCheckOut sends an order to ECPay server.
 func (c *Client) AioCheckOut(order order.Order) (string, error) {
-
 	if ok, err := order.Validate(); !ok {
 		return "", err
 	}
 
-	r := &Request{endpoint: c.endpoint + "/Cashier/AioCheckOut/V5", httpClient: c.httpClient}
-	res, _ := r.Do(order)
+	r := &Request{
+		endpoint:   c.endpoint + "/Cashier/AioCheckOut/V5",
+		httpClient: c.httpClient,
+	}
+	res, err := r.Do(order)
+	if err != nil {
+		return "", err
+	}
 
 	return res, nil
 }
 
 // QueryTradeInfo 查詢訂單
-func (c *Client) QueryTradeInfo() {
+func (c *Client) QueryTradeInfo(trade trade.Trade) (string, error) {
+	if ok, err := trade.Validate(); !ok {
+		return "", err
+	}
 
-	form := url.Values{}
-	form["MerchantID"] = []string{"1234567890"}
-	form["MerchantTradeNo"] = []string{"12345678901234567890"}
-	form["TimeStamp"] = []string{"1234567890"}
-	form["PlatformID"] = []string{"1234567890"}
+	r := &Request{
+		endpoint:   c.endpoint + "/Cashier/QueryTradeInfo/V5",
+		httpClient: c.httpClient,
+	}
+	res, err := r.Do(trade)
+	if err != nil {
+		return "", err
+	}
 
-	form["CheckMacValue"] = []string{utils.GetCheckMacValue(form)}
-	formStr := form.Encode()
-	formStr = strings.ReplaceAll(formStr, "-", "%2d")
-	formStr = strings.ReplaceAll(formStr, "_", "%5f")
-	formStr = strings.ReplaceAll(formStr, "*", "%2a")
-	formStr = strings.ReplaceAll(formStr, "(", "%28")
-	formStr = strings.ReplaceAll(formStr, ")", "%29")
-	formStr = strings.ReplaceAll(formStr, "+", "%20")
-	ecpayReq, _ := http.NewRequest("POST", c.endpoint+"/Cashier/QueryTradeInfo/V5", strings.NewReader(formStr))
-	ecpayReq.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-
+	return res, nil
 }
 
 // QueryCreditCardPeriodInfo 信用卡定期定額訂單查詢

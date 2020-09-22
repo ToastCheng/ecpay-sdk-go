@@ -223,7 +223,6 @@ func (o Order) Validate() (bool, error) {
 
 // ToFormData transform the Order struct to url.Values
 func (o Order) ToFormData(merchantID string) url.Values {
-	o.Validate()
 	ecpayReq := map[string][]string{}
 	ecpayReq["MerchantID"] = []string{merchantID}
 	ecpayReq["ChoosePayment"] = []string{string(o.ChoosePayment)}
