@@ -6,6 +6,7 @@
 This is LINE Login SDK for develop LINE Login with Golang.
 
 ## Documentation
+* Go Doc : https://godoc.org/github.com/toastcheng/ecpay-sdk-go
 * ECPay API : https://www.ecpay.com.tw/Service/API_Dwnld
 
 ## Requirements
