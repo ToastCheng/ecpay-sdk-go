@@ -93,11 +93,6 @@ func (c *Client) AioCheckOut(order order.Order) ([]byte, error) {
 // QueryTradeInfo 查詢訂單
 func (c *Client) QueryTradeInfo() {
 
-	// 'MerchantID': {'type': str, 'required': True, 'max': 10},
-	// 'MerchantTradeNo': {'type': str, 'required': True, 'max': 20},
-	// 'TimeStamp': {'type': int, 'required': True, },
-	// 'PlatformID': {'type': str, 'required': False, 'max': 10},
-
 	form := url.Values{}
 	form["MerchantID"] = []string{"1234567890"}
 	form["MerchantTradeNo"] = []string{"12345678901234567890"}
