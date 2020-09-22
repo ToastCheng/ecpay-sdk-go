@@ -1,7 +1,6 @@
 package ecpay
 
 import (
-	"bytes"
 	"log"
 	"strings"
 	"testing"
@@ -41,8 +40,7 @@ func TestCreateOrderAll(t *testing.T) {
 	if err != nil {
 		log.Fatalf("failed to AioCheckOut: %v", err)
 	}
-	respStr := bytes.NewBuffer(resp).String()
-	if strings.Contains(respStr, "交易失敗 Transaction failed") {
-		log.Fatalf("failed to AioCheckOut: %s", respStr)
+	if strings.Contains(resp, "交易失敗 Transaction failed") {
+		log.Fatalf("failed to AioCheckOut: %s", resp)
 	}
 }

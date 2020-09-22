@@ -1,8 +1,6 @@
 package ecpay
 
 import (
-	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -52,42 +50,16 @@ func NewClient(merchantID, hashKey, hashIV string, options ...ClientOption) (*Cl
 }
 
 // AioCheckOut sends an order to ECPay server.
-func (c *Client) AioCheckOut(order order.Order) ([]byte, error) {
+func (c *Client) AioCheckOut(order order.Order) (string, error) {
 
 	if ok, err := order.Validate(); !ok {
-		return nil, err
+		return "", err
 	}
 
-	form := order.ToFormData(c.merchantID)
-	form["CheckMacValue"] = []string{utils.GetCheckMacValue(form)}
+	r := &Request{endpoint: c.endpoint + "/Cashier/AioCheckOut/V5", httpClient: c.httpClient}
+	res, _ := r.Do(order)
 
-	formStr := form.Encode()
-	formStr = strings.ReplaceAll(formStr, "-", "%2d")
-	formStr = strings.ReplaceAll(formStr, "_", "%5f")
-	formStr = strings.ReplaceAll(formStr, "*", "%2a")
-	formStr = strings.ReplaceAll(formStr, "(", "%28")
-	formStr = strings.ReplaceAll(formStr, ")", "%29")
-	formStr = strings.ReplaceAll(formStr, "+", "%20")
-
-	ecpayReq, _ := http.NewRequest("POST", c.endpoint+"/Cashier/AioCheckOut/V5", strings.NewReader(formStr))
-	ecpayReq.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	ecpayReq.Header.Add("accept", "*/*")
-	ecpayReq.Header.Add("accept-encoding", "gzip, deflate, br")
-	ecpayReq.Header.Add("cache-control", "no-cache")
-
-	ecpayResp, err := c.httpClient.Do(ecpayReq)
-	if err != nil {
-		log.Printf("failed to create order: %v", err)
-		return nil, err
-	}
-	defer ecpayResp.Body.Close()
-
-	bodyBytes, err := ioutil.ReadAll(ecpayResp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	return bodyBytes, nil
+	return res, nil
 }
 
 // QueryTradeInfo 查詢訂單

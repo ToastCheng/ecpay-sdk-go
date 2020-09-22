@@ -15,6 +15,7 @@ import (
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/subpayment"
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/tax"
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/unionpay"
+	"github.com/toastcheng/ecpay-sdk-go/ecpay/utils"
 
 	"github.com/google/uuid"
 )
@@ -119,7 +120,7 @@ type InvoiceParam struct {
 }
 
 // Validate validate if the order struct is valid.
-func (o *Order) Validate() (bool, error) {
+func (o Order) Validate() (bool, error) {
 	// check null.
 	if o.MerchantTradeNo == "" {
 		return false, errors.New("MerchantTradeNo should not be empty")
@@ -221,7 +222,7 @@ func (o *Order) Validate() (bool, error) {
 }
 
 // ToFormData transform the Order struct to url.Values
-func (o *Order) ToFormData(merchantID string) url.Values {
+func (o Order) ToFormData(merchantID string) url.Values {
 	o.Validate()
 	ecpayReq := map[string][]string{}
 	ecpayReq["MerchantID"] = []string{merchantID}
@@ -304,6 +305,8 @@ func (o *Order) ToFormData(merchantID string) url.Values {
 		ecpayReq["InvoiceItemWord"] = []string{o.Invoice.InvoiceItemWord}
 		ecpayReq["InvoiceItemPrice"] = []string{o.Invoice.InvoiceItemPrice}
 	}
+
+	ecpayReq["CheckMacValue"] = []string{utils.GetCheckMacValue(ecpayReq)}
 
 	return ecpayReq
 }
