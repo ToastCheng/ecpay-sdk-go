@@ -96,12 +96,8 @@ func (c *Client) do(p Payload) (string, error) {
 	return respStr, nil
 }
 
-// AioCheckOut sends an order to ECPay server.
+// AioCheckOut sends an order to ECPay server (產生訂單).
 func (c *Client) AioCheckOut(order order.Order) (string, error) {
-	if ok, err := order.Validate(); !ok {
-		return "", err
-	}
-
 	res, err := c.do(order)
 	if err != nil {
 		return "", err
@@ -110,12 +106,8 @@ func (c *Client) AioCheckOut(order order.Order) (string, error) {
 	return res, nil
 }
 
-// QueryTradeInfo 查詢訂單
+// QueryTradeInfo queries a single creadit card trade info (查詢信用卡單筆明細記錄).
 func (c *Client) QueryTradeInfo(trade trade.Trade) (string, error) {
-	if ok, err := trade.Validate(); !ok {
-		return "", err
-	}
-
 	res, err := c.do(trade)
 	if err != nil {
 		return "", err

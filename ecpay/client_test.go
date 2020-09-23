@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/order"
+	"github.com/toastcheng/ecpay-sdk-go/ecpay/trade"
 )
 
 func getTestClient() *Client {
@@ -41,5 +42,18 @@ func TestCreateOrderAll(t *testing.T) {
 	}
 	if strings.Contains(resp, "交易失敗 Transaction failed") {
 		log.Fatalf("failed to AioCheckOut: %s", resp)
+	}
+}
+
+func TestQueryTradeInfo(t *testing.T) {
+	client := getTestClient()
+	trade := trade.Trade{
+		MerchantTradeNo: "NO123",
+		TimeStamp:       "2020/10/10 10:10:10",
+	}
+
+	resp, err := client.QueryTradeInfo(trade)
+	if err != nil {
+		log.Fatalf("failed to QueryTradeInfo: %v", err)
 	}
 }

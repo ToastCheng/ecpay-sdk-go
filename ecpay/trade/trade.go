@@ -1,6 +1,7 @@
 package trade
 
 import (
+	"encoding/json"
 	"net/url"
 
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/utils"
@@ -8,7 +9,6 @@ import (
 
 // Trade defines the struct of trade.
 type Trade struct {
-	MerchantID      string
 	MerchantTradeNo string
 	TimeStamp       string
 }
@@ -20,8 +20,15 @@ func (o Trade) Validate() (bool, error) {
 
 // ToFormData transform the Trade struct to url.Values
 func (o Trade) ToFormData(merchantID, hashKey, hashIV string) url.Values {
-	ecpayReq := map[string][]string{}
-	ecpayReq["CheckMacValue"] = []string{utils.GetCheckMacValue(ecpayReq, hashKey, hashIV)}
+	req := url.Values{}
+	mp := map[string]string{}
+	databytes, _ := json.Marshal(o)
+	json.Unmarshal(databytes, &mp)
+	for k, v := range mp {
+		req.Set(k, v)
+	}
+	req.Set("MerchantID", merchantID)
+	req["CheckMacValue"] = []string{utils.GetCheckMacValue(req, hashKey, hashIV)}
 
-	return ecpayReq
+	return req
 }
