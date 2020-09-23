@@ -1,7 +1,6 @@
 package ecpay
 
 import (
-	"bytes"
 	"encoding/json"
 	"io/ioutil"
 	"log"
@@ -9,7 +8,6 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/toastcheng/ecpay-sdk-go/ecpay/creditcard"
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/order"
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/payment"
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/trade"
@@ -60,7 +58,9 @@ func (c *Client) do(p Payload) (*http.Response, error) {
 		return nil, err
 	}
 
-	form := p.ToFormData(c.merchantID, c.hashKey, c.hashIV)
+	form := p.ToFormData()
+	form.Set("MerchantID", c.merchantID)
+	form.Set("CheckMacValue", GetCheckMacValue(form, c.hashKey, c.hashIV))
 
 	formStr := form.Encode()
 	formStr = strings.ReplaceAll(formStr, "-", "%2d")
@@ -84,9 +84,9 @@ func (c *Client) do(p Payload) (*http.Response, error) {
 		endpoint = c.endpoint + "/Cashier/QueryCreditCardPeriodInfo"
 	case payment.Statement:
 		endpoint = c.vendor + "/PaymentMedia/TradeNoAio"
-	case creditcard.Action:
+	case payment.CreditCardAction:
 		endpoint = c.endpoint + "/CreditDetail/DoAction"
-	case creditcard.Statement:
+	case payment.CreditCardStatement:
 		endpoint = c.endpoint + "/CreditDetail/FundingReconDetail"
 	default:
 		endpoint = c.endpoint
@@ -95,7 +95,6 @@ func (c *Client) do(p Payload) (*http.Response, error) {
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Add("accept", "*/*")
 	req.Header.Add("accept-encoding", "gzip, deflate, br")
-	req.Header.Add("cache-control", "no-cache")
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
@@ -118,9 +117,8 @@ func (c *Client) AioCheckOut(order order.Order) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	respStr := bytes.NewBuffer(bodyBytes).String()
 
-	return respStr, nil
+	return string(bodyBytes), nil
 }
 
 // QueryTradeInfo queries a single trade info (查詢訂單).
@@ -135,9 +133,8 @@ func (c *Client) QueryTradeInfo(info trade.Info) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	respStr := bytes.NewBuffer(bodyBytes).String()
 
-	return respStr, nil
+	return string(bodyBytes), nil
 }
 
 // QueryTrade queries a single creadit card trade (查詢信用卡單筆明細記錄).
@@ -165,8 +162,8 @@ func (c *Client) QueryPaymentInfo(info payment.Info) (map[string]interface{}, er
 	if err != nil {
 		return nil, err
 	}
-	respStr := bytes.NewBuffer(bodyBytes).String()
-	m, err := url.ParseQuery(respStr)
+
+	m, err := url.ParseQuery(string(bodyBytes))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -195,7 +192,7 @@ func (c *Client) QueryCreditCardPeriodInfo(info payment.CreditCardPeriodInfo) (m
 }
 
 // DoAction fires an credit card refund action (信用卡請退款功能).
-func (c *Client) DoAction(action creditcard.Action) (map[string]interface{}, error) {
+func (c *Client) DoAction(action payment.CreditCardAction) (map[string]interface{}, error) {
 	resp, err := c.do(action)
 	if err != nil {
 		return nil, err
@@ -206,8 +203,8 @@ func (c *Client) DoAction(action creditcard.Action) (map[string]interface{}, err
 	if err != nil {
 		return nil, err
 	}
-	respStr := bytes.NewBuffer(bodyBytes).String()
-	m, err := url.ParseQuery(respStr)
+
+	m, err := url.ParseQuery(string(bodyBytes))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -233,13 +230,12 @@ func (c *Client) TradeNoAio(statement payment.Statement) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	respStr := bytes.NewBuffer(bodyBytes).String()
 
-	return respStr, nil
+	return string(bodyBytes), nil
 }
 
 // FundingReconDetail downloads the member statement (下載信用卡撥款對帳資料檔).
-func (c *Client) FundingReconDetail(statement creditcard.Statement) (string, error) {
+func (c *Client) FundingReconDetail(statement payment.CreditCardStatement) (string, error) {
 	resp, err := c.do(statement)
 	if err != nil {
 		return "", err
@@ -250,7 +246,6 @@ func (c *Client) FundingReconDetail(statement creditcard.Statement) (string, err
 	if err != nil {
 		return "", err
 	}
-	respStr := bytes.NewBuffer(bodyBytes).String()
 
-	return respStr, nil
+	return string(bodyBytes), nil
 }

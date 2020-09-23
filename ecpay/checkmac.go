@@ -1,4 +1,4 @@
-package utils
+package ecpay
 
 import (
 	"crypto/sha256"

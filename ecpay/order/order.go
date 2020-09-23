@@ -8,8 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/toastcheng/ecpay-sdk-go/ecpay/utils"
-
 	"github.com/google/uuid"
 )
 
@@ -225,9 +223,8 @@ func (o Order) Validate() (bool, error) {
 }
 
 // ToFormData transform the Order struct to url.Values
-func (o Order) ToFormData(merchantID, hashKey, hashIV string) url.Values {
+func (o Order) ToFormData() url.Values {
 	ecpayReq := map[string][]string{}
-	ecpayReq["MerchantID"] = []string{merchantID}
 	ecpayReq["ChoosePayment"] = []string{string(o.ChoosePayment)}
 	ecpayReq["EncryptType"] = []string{"1"}
 	ecpayReq["MerchantTradeNo"] = []string{
@@ -307,8 +304,6 @@ func (o Order) ToFormData(merchantID, hashKey, hashIV string) url.Values {
 		ecpayReq["InvoiceItemWord"] = []string{o.Invoice.InvoiceItemWord}
 		ecpayReq["InvoiceItemPrice"] = []string{o.Invoice.InvoiceItemPrice}
 	}
-
-	ecpayReq["CheckMacValue"] = []string{utils.GetCheckMacValue(ecpayReq, hashKey, hashIV)}
 
 	return ecpayReq
 }

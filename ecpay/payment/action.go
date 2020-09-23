@@ -1,14 +1,12 @@
-package creditcard
+package payment
 
 import (
 	"encoding/json"
 	"net/url"
-
-	"github.com/toastcheng/ecpay-sdk-go/ecpay/utils"
 )
 
-// Action defines the struct of trade info.
-type Action struct {
+// CreditCardAction defines the struct of trade info.
+type CreditCardAction struct {
 	MerchantTradeNo string     `json:"MerchantTradeNo,omitempty"`
 	TradeNo         string     `json:"TradeNo,omitempty"`
 	Action          ActionType `json:"Action,omitempty"`
@@ -17,12 +15,12 @@ type Action struct {
 }
 
 // Validate validate if the trade struct is valid.
-func (a Action) Validate() (bool, error) {
+func (a CreditCardAction) Validate() (bool, error) {
 	return true, nil
 }
 
 // ToFormData transform the Trade struct to url.Values
-func (a Action) ToFormData(merchantID, hashKey, hashIV string) url.Values {
+func (a CreditCardAction) ToFormData() url.Values {
 	req := url.Values{}
 	mp := map[string]string{}
 	databytes, _ := json.Marshal(a)
@@ -30,8 +28,6 @@ func (a Action) ToFormData(merchantID, hashKey, hashIV string) url.Values {
 	for k, v := range mp {
 		req.Set(k, v)
 	}
-	req.Set("MerchantID", merchantID)
-	req.Set("CheckMacValue", utils.GetCheckMacValue(req, hashKey, hashIV))
 
 	return req
 }

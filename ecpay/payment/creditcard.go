@@ -3,8 +3,6 @@ package payment
 import (
 	"encoding/json"
 	"net/url"
-
-	"github.com/toastcheng/ecpay-sdk-go/ecpay/utils"
 )
 
 // CreditCardPeriodInfo defines the struct of trade info.
@@ -20,7 +18,7 @@ func (c CreditCardPeriodInfo) Validate() (bool, error) {
 }
 
 // ToFormData transform the Trade struct to url.Values
-func (c CreditCardPeriodInfo) ToFormData(merchantID, hashKey, hashIV string) url.Values {
+func (c CreditCardPeriodInfo) ToFormData() url.Values {
 	req := url.Values{}
 	mp := map[string]string{}
 	databytes, _ := json.Marshal(c)
@@ -28,8 +26,6 @@ func (c CreditCardPeriodInfo) ToFormData(merchantID, hashKey, hashIV string) url
 	for k, v := range mp {
 		req.Set(k, v)
 	}
-	req.Set("MerchantID", merchantID)
-	req.Set("CheckMacValue", utils.GetCheckMacValue(req, hashKey, hashIV))
 
 	return req
 }

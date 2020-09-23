@@ -1,4 +1,4 @@
-package creditcard
+package payment
 
 // ActionType defines the struct of credit card action.
 type ActionType string
