@@ -8,13 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/carrier"
-	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/donation"
-	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/payment"
-	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/period"
-	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/subpayment"
-	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/tax"
-	"github.com/toastcheng/ecpay-sdk-go/ecpay/order/unionpay"
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/utils"
 
 	"github.com/google/uuid"
@@ -32,9 +25,9 @@ type Order struct {
 	ReturnURL         string
 	ClientBackURL     string
 	OrderResultURL    string
-	PaymentType       payment.PaymentType
-	ChoosePayment     payment.ChoosePaymentType
-	ChooseSubPayment  subpayment.ChooseSubpaymentType
+	PaymentType       PaymentType
+	ChoosePayment     ChoosePaymentType
+	ChooseSubPayment  ChooseSubpaymentType
 	Remark            string
 	NeedExtraPaidInfo bool
 	DeviceSource      string
@@ -79,14 +72,14 @@ type CreditParam struct {
 
 	// 一次付清
 	Redeem   bool
-	UnionPay unionpay.UnionPay
+	UnionPay UnionPayType
 
 	// 分期付款
 	CreditInstallment string
 
 	// 定期定額
 	PeriodAmount    int
-	PeriodType      period.Period
+	PeriodType      PeriodType
 	Frequency       int
 	ExecTimes       int
 	PeriodReturnURL string
@@ -95,8 +88,8 @@ type CreditParam struct {
 // InvoiceParam defines the parameters for invoice specific settings.
 type InvoiceParam struct {
 	RelateNumber     string
-	TaxType          tax.Tax
-	Donation         donation.Donation
+	TaxType          TaxType
+	Donation         DonationType
 	Print            bool
 	InvoiceItemName  string
 	InvoiceItemCount string
@@ -110,7 +103,7 @@ type InvoiceParam struct {
 	CustomerPhone      string
 	CustomerEmail      string
 	ClearanceMark      string
-	CarrierType        carrier.CarrierType
+	CarrierType        CarrierType
 	CarrierNum         string
 	LoveCode           string
 	InvoiceItemWord    string
@@ -186,7 +179,7 @@ func (o Order) Validate() (bool, error) {
 		if !o.Invoice.Print {
 			return false, errors.New("Print has to be true, when CustomerIdentifier have value")
 		}
-		if o.Invoice.Donation == donation.No {
+		if o.Invoice.Donation == DonationTypeNo {
 			return false, errors.New("Donation has to be false, when CustomerIdentifier have value")
 		}
 	}
@@ -207,7 +200,7 @@ func (o Order) Validate() (bool, error) {
 		return false, errors.New("CustomerPhone should not be empty if CustomerEmail is empty")
 	}
 
-	if o.Invoice.Donation == donation.Yes {
+	if o.Invoice.Donation == DonationTypeYes {
 		if o.Invoice.Print {
 			return false, errors.New("Print should be false if Donation is set to true")
 		}
@@ -250,7 +243,7 @@ func (o Order) ToFormData(merchantID string) url.Values {
 	}
 
 	cp := o.ChoosePayment
-	if cp == payment.All || cp == payment.Credit {
+	if cp == ChoosePaymentTypeAll || cp == ChoosePaymentTypeCredit {
 		// 一次付清
 		if o.Credit.Redeem {
 			if o.Credit.Redeem {
@@ -265,7 +258,7 @@ func (o Order) ToFormData(merchantID string) url.Values {
 
 		} else if o.Credit.PeriodAmount != 0 ||
 			// 定期定額
-			o.Credit.PeriodType == period.DAY ||
+			o.Credit.PeriodType == PeriodTypeDay ||
 			o.Credit.Frequency != 0 ||
 			o.Credit.ExecTimes != 0 ||
 			o.Credit.PeriodReturnURL != "" {
