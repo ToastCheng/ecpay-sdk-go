@@ -20,6 +20,7 @@ func getTestClient() *Client {
 
 func TestCreateOrderAll(t *testing.T) {
 	client := getTestClient()
+	items := []string{"item1", "item2"}
 	order := order.Order{
 		MerchantTradeNo:   "NO123",
 		MerchantTradeDate: "2020/10/10 10:10:10",
@@ -27,7 +28,7 @@ func TestCreateOrderAll(t *testing.T) {
 		ChoosePayment:     order.ChoosePaymentTypeAll,
 		TotalAmount:       100,
 		PaymentType:       order.PaymentTypeAIO,
-		ItemNames:         []string{"item1", "item2"},
+		ItemName:          MultipleItems(items),
 		TradeDesc:         "description",
 		ReturnURL:         "https://abc.com",
 		NeedExtraPaidInfo: false,

@@ -15,6 +15,7 @@ import (
 
 // Client implements client for making ECPay api.
 type Client struct {
+	// merchantID (特店編號).
 	merchantID string
 	hashKey    string
 	hashIV     string
