@@ -1,7 +1,11 @@
 package ecpay
 
 import (
+	"bytes"
+	"io/ioutil"
+	"log"
 	"net/http"
+	"strings"
 
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/trade"
 
@@ -48,17 +52,57 @@ func NewClient(merchantID, hashKey, hashIV string, options ...ClientOption) (*Cl
 	return c, nil
 }
 
+func (c *Client) do(p Payload) (string, error) {
+	if ok, err := p.Validate(); !ok {
+		return "", err
+	}
+
+	form := p.ToFormData(c.merchantID, c.hashKey, c.hashIV)
+
+	formStr := form.Encode()
+	formStr = strings.ReplaceAll(formStr, "-", "%2d")
+	formStr = strings.ReplaceAll(formStr, "_", "%5f")
+	formStr = strings.ReplaceAll(formStr, "*", "%2a")
+	formStr = strings.ReplaceAll(formStr, "(", "%28")
+	formStr = strings.ReplaceAll(formStr, ")", "%29")
+	formStr = strings.ReplaceAll(formStr, "+", "%20")
+
+	var endpoint string
+	switch p.(type) {
+	case order.Order:
+		endpoint = c.endpoint + "/Cashier/AioCheckOut/V5"
+	default:
+		endpoint = c.endpoint
+	}
+	ecpayReq, _ := http.NewRequest("POST", endpoint, strings.NewReader(formStr))
+	ecpayReq.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	ecpayReq.Header.Add("accept", "*/*")
+	ecpayReq.Header.Add("accept-encoding", "gzip, deflate, br")
+	ecpayReq.Header.Add("cache-control", "no-cache")
+
+	ecpayResp, err := c.httpClient.Do(ecpayReq)
+	if err != nil {
+		log.Printf("failed to create order: %v", err)
+		return "", err
+	}
+	defer ecpayResp.Body.Close()
+
+	bodyBytes, err := ioutil.ReadAll(ecpayResp.Body)
+	if err != nil {
+		return "", err
+	}
+	respStr := bytes.NewBuffer(bodyBytes).String()
+
+	return respStr, nil
+}
+
 // AioCheckOut sends an order to ECPay server.
 func (c *Client) AioCheckOut(order order.Order) (string, error) {
 	if ok, err := order.Validate(); !ok {
 		return "", err
 	}
 
-	r := &Request{
-		endpoint:   c.endpoint + "/Cashier/AioCheckOut/V5",
-		httpClient: c.httpClient,
-	}
-	res, err := r.Do(order)
+	res, err := c.do(order)
 	if err != nil {
 		return "", err
 	}
@@ -72,11 +116,7 @@ func (c *Client) QueryTradeInfo(trade trade.Trade) (string, error) {
 		return "", err
 	}
 
-	r := &Request{
-		endpoint:   c.endpoint + "/Cashier/QueryTradeInfo/V5",
-		httpClient: c.httpClient,
-	}
-	res, err := r.Do(trade)
+	res, err := c.do(trade)
 	if err != nil {
 		return "", err
 	}

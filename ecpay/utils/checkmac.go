@@ -9,21 +9,21 @@ import (
 )
 
 // GetCheckMacValue gets the check mac.
-func GetCheckMacValue(req url.Values) string {
+func GetCheckMacValue(req url.Values, hashKey, hashIV string) string {
 	keys := []string{}
 	for k := range req {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
 
-	str := "HashKey=5294y06JbISpM5x9&"
+	str := "HashKey=" + hashKey + "&"
 	for _, k := range keys {
 		if req[k][0] != "" {
 			str += k + "=" + req[k][0] + "&"
 		}
 	}
 
-	str += "HashIV=v77hoKGq4kWxNNIS"
+	str += "HashIV=" + hashIV
 	str = url.QueryEscape(str)
 	str = strings.ReplaceAll(str, "%2A", "*")
 	str = strings.ReplaceAll(str, "%28", "(")

@@ -225,7 +225,7 @@ func (o Order) Validate() (bool, error) {
 }
 
 // ToFormData transform the Order struct to url.Values
-func (o Order) ToFormData(merchantID string) url.Values {
+func (o Order) ToFormData(merchantID, hashKey, hashIV string) url.Values {
 	ecpayReq := map[string][]string{}
 	ecpayReq["MerchantID"] = []string{merchantID}
 	ecpayReq["ChoosePayment"] = []string{string(o.ChoosePayment)}
@@ -308,7 +308,7 @@ func (o Order) ToFormData(merchantID string) url.Values {
 		ecpayReq["InvoiceItemPrice"] = []string{o.Invoice.InvoiceItemPrice}
 	}
 
-	ecpayReq["CheckMacValue"] = []string{utils.GetCheckMacValue(ecpayReq)}
+	ecpayReq["CheckMacValue"] = []string{utils.GetCheckMacValue(ecpayReq, hashKey, hashIV)}
 
 	return ecpayReq
 }

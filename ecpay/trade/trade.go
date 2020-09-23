@@ -15,9 +15,9 @@ func (o Trade) Validate() (bool, error) {
 }
 
 // ToFormData transform the Trade struct to url.Values
-func (o Trade) ToFormData(merchantID string) url.Values {
+func (o Trade) ToFormData(merchantID, hashKey, hashIV string) url.Values {
 	ecpayReq := map[string][]string{}
-	ecpayReq["CheckMacValue"] = []string{utils.GetCheckMacValue(ecpayReq)}
+	ecpayReq["CheckMacValue"] = []string{utils.GetCheckMacValue(ecpayReq, hashKey, hashIV)}
 
 	return ecpayReq
 }
