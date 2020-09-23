@@ -24,4 +24,4 @@ Feel free to check [issues page](https://github.com/jinil-ha/line-sdk-go/issues)
 
 ## License
 
-`ecpay-sdk-go` is available under the [Beerware](https://github.com/toastcheng/ecpay-sdk-go/blob/master/LICENSE.md) license.
+`ecpay-sdk-go` is available under the [MIT](https://github.com/toastcheng/ecpay-sdk-go/blob/master/LICENSE.md) license.
