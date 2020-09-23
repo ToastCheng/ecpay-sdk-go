@@ -221,7 +221,7 @@ func (c *Client) DoAction(action creditcard.Action) (map[string]interface{}, err
 	return result, nil
 }
 
-// TradeNoAio (下載特店對帳媒體檔).
+// TradeNoAio downloads the member statement (下載特店對帳媒體檔).
 func (c *Client) TradeNoAio(statement payment.Statement) (string, error) {
 	resp, err := c.do(statement)
 	if err != nil {
@@ -238,7 +238,7 @@ func (c *Client) TradeNoAio(statement payment.Statement) (string, error) {
 	return respStr, nil
 }
 
-// FundingReconDetail (下載信用卡撥款對帳資料檔).
+// FundingReconDetail downloads the member statement (下載信用卡撥款對帳資料檔).
 func (c *Client) FundingReconDetail(statement creditcard.Statement) (string, error) {
 	resp, err := c.do(statement)
 	if err != nil {
