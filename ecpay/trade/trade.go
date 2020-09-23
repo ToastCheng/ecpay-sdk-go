@@ -9,8 +9,9 @@ import (
 
 // Trade defines the struct of trade.
 type Trade struct {
-	MerchantTradeNo string
-	TimeStamp       string
+	CreditRefundID  string `json:"CreditRefundId,omitempty"`
+	CreditAmount    string `json:"CreditAmount,omitempty"`
+	CreditCheckCode string `json:"CreditCheckCode,omitempty"`
 }
 
 // Validate validate if the trade struct is valid.

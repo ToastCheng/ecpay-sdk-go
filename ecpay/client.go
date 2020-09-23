@@ -2,10 +2,14 @@ package ecpay
 
 import (
 	"bytes"
+	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"strings"
+
+	"github.com/toastcheng/ecpay-sdk-go/ecpay/payment"
 
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/trade"
 
@@ -52,9 +56,9 @@ func NewClient(merchantID, hashKey, hashIV string, options ...ClientOption) (*Cl
 	return c, nil
 }
 
-func (c *Client) do(p Payload) (string, error) {
+func (c *Client) do(p Payload) (*http.Response, error) {
 	if ok, err := p.Validate(); !ok {
-		return "", err
+		return nil, err
 	}
 
 	form := p.ToFormData(c.merchantID, c.hashKey, c.hashIV)
@@ -71,23 +75,41 @@ func (c *Client) do(p Payload) (string, error) {
 	switch p.(type) {
 	case order.Order:
 		endpoint = c.endpoint + "/Cashier/AioCheckOut/V5"
+	case trade.Info:
+		endpoint = c.endpoint + "/Cashier/QueryTradeInfo/V5"
+	case payment.Info:
+		endpoint = c.endpoint + "/Cashier/QueryPaymentInfo"
+	case trade.Trade:
+		endpoint = c.endpoint + "/CreditDetail/QueryTrade/V2"
+	case payment.CreditCardPeriodInfo:
+		endpoint = c.endpoint + "/Cashier/QueryCreditCardPeriodInfo"
 	default:
 		endpoint = c.endpoint
 	}
-	ecpayReq, _ := http.NewRequest("POST", endpoint, strings.NewReader(formStr))
-	ecpayReq.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	ecpayReq.Header.Add("accept", "*/*")
-	ecpayReq.Header.Add("accept-encoding", "gzip, deflate, br")
-	ecpayReq.Header.Add("cache-control", "no-cache")
+	req, _ := http.NewRequest("POST", endpoint, strings.NewReader(formStr))
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Add("accept", "*/*")
+	req.Header.Add("accept-encoding", "gzip, deflate, br")
+	req.Header.Add("cache-control", "no-cache")
 
-	ecpayResp, err := c.httpClient.Do(ecpayReq)
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		log.Printf("failed to create order: %v", err)
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+// AioCheckOut sends an order to ECPay server (產生訂單).
+func (c *Client) AioCheckOut(order order.Order) (string, error) {
+	resp, err := c.do(order)
+	if err != nil {
 		return "", err
 	}
-	defer ecpayResp.Body.Close()
+	defer resp.Body.Close()
 
-	bodyBytes, err := ioutil.ReadAll(ecpayResp.Body)
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}
@@ -96,62 +118,91 @@ func (c *Client) do(p Payload) (string, error) {
 	return respStr, nil
 }
 
-// AioCheckOut sends an order to ECPay server (產生訂單).
-func (c *Client) AioCheckOut(order order.Order) (string, error) {
-	res, err := c.do(order)
+// QueryTradeInfo queries a single trade info (查詢訂單).
+func (c *Client) QueryTradeInfo(info trade.Info) (string, error) {
+	resp, err := c.do(info)
 	if err != nil {
 		return "", err
 	}
+	defer resp.Body.Close()
 
-	return res, nil
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	respStr := bytes.NewBuffer(bodyBytes).String()
+
+	return respStr, nil
 }
 
-// QueryTradeInfo queries a single creadit card trade info (查詢信用卡單筆明細記錄).
-func (c *Client) QueryTradeInfo(trade trade.Trade) (string, error) {
-	res, err := c.do(trade)
+// QueryTrade queries a single creadit card trade (查詢信用卡單筆明細記錄).
+func (c *Client) QueryTrade(trade trade.Trade) (map[string]interface{}, error) {
+	resp, err := c.do(trade)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
+	defer resp.Body.Close()
 
-	return res, nil
+	var result map[string]interface{}
+	json.NewDecoder(resp.Body).Decode(&result)
+	return result, nil
+}
+
+// QueryPaymentInfo queries payment info of ATM/CVS/Barcode (查詢 ATM/CVS/BARCODE 取號結果).
+func (c *Client) QueryPaymentInfo(info payment.Info) (map[string]interface{}, error) {
+	resp, err := c.do(info)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	respStr := bytes.NewBuffer(bodyBytes).String()
+	m, err := url.ParseQuery(respStr)
+	if err != nil {
+		log.Fatal(err)
+	}
+	dataBytes, err := json.Marshal(m)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var result map[string]interface{}
+	json.Unmarshal(dataBytes, &result)
+	return result, nil
 }
 
 // QueryCreditCardPeriodInfo 信用卡定期定額訂單查詢
-func (c *Client) QueryCreditCardPeriodInfo() {
-	ecpayReq, _ := http.NewRequest("POST", c.endpoint+"/Cashier/QueryCreditCardPeriodInfo", nil)
-	ecpayReq.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+func (c *Client) QueryCreditCardPeriodInfo(info payment.CreditCardPeriodInfo) (map[string]interface{}, error) {
+	resp, err := c.do(info)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result map[string]interface{}
+	json.NewDecoder(resp.Body).Decode(&result)
+	return result, nil
 
 }
 
-// QueryTrade 查詢信用卡單筆明細記錄
-func (c *Client) QueryTrade() {
-	ecpayReq, _ := http.NewRequest("POST", c.endpoint+"/CreditDetail/QueryTrade/V2", nil)
-	ecpayReq.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-
-}
-
-// QueryPaymentInfo 查詢 ATM/CVS/BARCODE 取號結果
-func (c *Client) QueryPaymentInfo() {
-	ecpayReq, _ := http.NewRequest("POST", c.endpoint+"/Cashier/QueryPaymentInfo", nil)
-	ecpayReq.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-
-}
-
-// QueryPaymentInfo 信用卡請退款功能 (若不撰寫此 API，則可透過廠商後台功能處理)
+// DoAction (信用卡請退款功能).
 func (c *Client) DoAction() {
 	ecpayReq, _ := http.NewRequest("POST", c.endpoint+"/CreditDetail/DoAction", nil)
 	ecpayReq.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 }
 
-// TradeNoAio 下載特店對帳媒體檔
+// TradeNoAio (下載特店對帳媒體檔).
 func (c *Client) TradeNoAio() {
 	ecpayReq, _ := http.NewRequest("POST", c.vendor+"/PaymentMedia/TradeNoAio", nil)
 	ecpayReq.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 }
 
-// FundingReconDetail 下載信用卡撥款對帳資料檔
+// FundingReconDetail (下載信用卡撥款對帳資料檔).
 func (c *Client) FundingReconDetail() {
 	ecpayReq, _ := http.NewRequest("POST", c.vendor+"/CreditDetail/FundingReconDetail", nil)
 	ecpayReq.Header.Add("Content-Type", "application/x-www-form-urlencoded")

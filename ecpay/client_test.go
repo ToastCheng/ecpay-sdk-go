@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/order"
+	"github.com/toastcheng/ecpay-sdk-go/ecpay/payment"
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/trade"
 )
 
@@ -47,12 +48,50 @@ func TestCreateOrderAll(t *testing.T) {
 
 func TestQueryTradeInfo(t *testing.T) {
 	client := getTestClient()
-	trade := trade.Trade{
+	info := trade.Info{
 		MerchantTradeNo: "NO123",
 		TimeStamp:       "2020/10/10 10:10:10",
 	}
 
-	resp, err := client.QueryTradeInfo(trade)
+	_, err := client.QueryTradeInfo(info)
+	if err != nil {
+		log.Fatalf("failed to QueryTradeInfo: %v", err)
+	}
+}
+
+func TestQueryTrade(t *testing.T) {
+	client := getTestClient()
+	trade := trade.Trade{
+		CreditRefundID: "NO123",
+	}
+
+	_, err := client.QueryTrade(trade)
+	if err != nil {
+		log.Fatalf("failed to QueryTradeInfo: %v", err)
+	}
+}
+
+func TestQueryPaymentInfo(t *testing.T) {
+	client := getTestClient()
+	info := payment.Info{
+		MerchantTradeNo: "NO123",
+		TimeStamp:       "2020/10/10 10:10:10",
+	}
+
+	_, err := client.QueryPaymentInfo(info)
+	if err != nil {
+		log.Fatalf("failed to QueryTradeInfo: %v", err)
+	}
+}
+
+func TestQueryCreditCardPeriodInfo(t *testing.T) {
+	client := getTestClient()
+	info := payment.CreditCardPeriodInfo{
+		MerchantTradeNo: "NO123",
+		TimeStamp:       "2020/10/10 10:10:10",
+	}
+
+	_, err := client.QueryCreditCardPeriodInfo(info)
 	if err != nil {
 		log.Fatalf("failed to QueryTradeInfo: %v", err)
 	}
