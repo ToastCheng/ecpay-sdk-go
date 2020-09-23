@@ -66,22 +66,32 @@ type CVSOrBarcodeParam struct {
 
 // CreditParam defines the parameters tailored for credit card transaction.
 type CreditParam struct {
-	BindingCard      string
+	// BindingCard (記憶卡號).
+	BindingCard string
+	// MerchantMemberID (記憶卡號識別碼).
 	MerchantMemberID string
-	Language         string
+	// Language (語系設定).
+	Language string
 
 	// 一次付清
-	Redeem   bool
+	// Redeem (信用卡是否使用紅利折抵).
+	Redeem bool
+	// UnionPay (銀聯卡交易選項).
 	UnionPay UnionPayType
 
 	// 分期付款
+	// CreditInstallment (刷卡分期期數).
 	CreditInstallment string
 
 	// 定期定額
-	PeriodAmount    int
-	PeriodType      PeriodType
-	Frequency       int
-	ExecTimes       int
+	PeriodAmount int
+	// PeriodType (週期種類).
+	PeriodType PeriodType
+	// Frequency (執行頻率).
+	Frequency int
+	// ExecTimes (執行次數).
+	ExecTimes int
+	// PeriodReturnURL (定期定額的執行結果回應URL).
 	PeriodReturnURL string
 }
 
