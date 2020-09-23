@@ -21,7 +21,7 @@ go get github.com/toastcheng/ecpay-sdk-go/ecpay
 ## Contributing
 
 Contributions, issues and feature requests are welcome!
-Feel free to check [issues page](https://github.com/jinil-ha/line-sdk-go/issues).
+Feel free to check [issues page](https://github.com/toastcheng/ecpay-sdk-go/issues).
 
 ## License
 
