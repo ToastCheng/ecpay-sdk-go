@@ -6,7 +6,11 @@ import (
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/utils"
 )
 
+// Trade defines the struct of trade.
 type Trade struct {
+	MerchantID      string
+	MerchantTradeNo string
+	TimeStamp       string
 }
 
 // Validate validate if the trade struct is valid.

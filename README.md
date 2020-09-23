@@ -3,7 +3,7 @@
 [![license](https://img.shields.io/badge/license-beer-green)](https://github.com/toastcheng/ecpay/blob/master/LICENSE.md)
 
 ## Introduction
-This is LINE Login SDK for develop LINE Login with Golang.
+This is ECPay SDK for Golang.
 
 ## Documentation
 * Go Doc : https://godoc.org/github.com/toastcheng/ecpay-sdk-go
