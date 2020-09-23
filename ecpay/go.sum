@@ -1,3 +1,4 @@
 github.com/google/uuid v1.1.2 h1:EVhdT+1Kseyi1/pUmXKaFxYsDNy9RQYkMWRH68J/W7Y=
 github.com/google/uuid v1.1.2/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
+github.com/toastcheng/ecpay-sdk-go v0.0.0-20200923081429-c1a0e3d96c2f h1:KdsZJed9RhAH1Uhfqbr6/QY6JhIRZEptxFaEdPWVNxs=
 github.com/toastcheng/ecpay-sdk-go v0.1.0 h1:9GEUkMp5PpGvYyVGesnTPXoLLBHjq4ecHVarlz12eMc=

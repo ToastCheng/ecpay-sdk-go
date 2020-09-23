@@ -9,11 +9,10 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/toastcheng/ecpay-sdk-go/ecpay/payment"
-
-	"github.com/toastcheng/ecpay-sdk-go/ecpay/trade"
-
+	"github.com/toastcheng/ecpay-sdk-go/ecpay/creditcard"
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/order"
+	"github.com/toastcheng/ecpay-sdk-go/ecpay/payment"
+	"github.com/toastcheng/ecpay-sdk-go/ecpay/trade"
 )
 
 // Client implements client for making ECPay api.
@@ -83,6 +82,12 @@ func (c *Client) do(p Payload) (*http.Response, error) {
 		endpoint = c.endpoint + "/CreditDetail/QueryTrade/V2"
 	case payment.CreditCardPeriodInfo:
 		endpoint = c.endpoint + "/Cashier/QueryCreditCardPeriodInfo"
+	case payment.Statement:
+		endpoint = c.vendor + "/PaymentMedia/TradeNoAio"
+	case creditcard.Action:
+		endpoint = c.endpoint + "/CreditDetail/DoAction"
+	case creditcard.Statement:
+		endpoint = c.endpoint + "/CreditDetail/FundingReconDetail"
 	default:
 		endpoint = c.endpoint
 	}
@@ -171,10 +176,11 @@ func (c *Client) QueryPaymentInfo(info payment.Info) (map[string]interface{}, er
 	}
 	var result map[string]interface{}
 	json.Unmarshal(dataBytes, &result)
+
 	return result, nil
 }
 
-// QueryCreditCardPeriodInfo 信用卡定期定額訂單查詢
+// QueryCreditCardPeriodInfo queries credit card periodic payment (信用卡定期定額訂單查詢).
 func (c *Client) QueryCreditCardPeriodInfo(info payment.CreditCardPeriodInfo) (map[string]interface{}, error) {
 	resp, err := c.do(info)
 	if err != nil {
@@ -184,27 +190,67 @@ func (c *Client) QueryCreditCardPeriodInfo(info payment.CreditCardPeriodInfo) (m
 
 	var result map[string]interface{}
 	json.NewDecoder(resp.Body).Decode(&result)
-	return result, nil
 
+	return result, nil
 }
 
-// DoAction (信用卡請退款功能).
-func (c *Client) DoAction() {
-	ecpayReq, _ := http.NewRequest("POST", c.endpoint+"/CreditDetail/DoAction", nil)
-	ecpayReq.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+// DoAction fires an credit card refund action (信用卡請退款功能).
+func (c *Client) DoAction(action creditcard.Action) (map[string]interface{}, error) {
+	resp, err := c.do(action)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
 
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	respStr := bytes.NewBuffer(bodyBytes).String()
+	m, err := url.ParseQuery(respStr)
+	if err != nil {
+		log.Fatal(err)
+	}
+	dataBytes, err := json.Marshal(m)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var result map[string]interface{}
+	json.Unmarshal(dataBytes, &result)
+
+	return result, nil
 }
 
 // TradeNoAio (下載特店對帳媒體檔).
-func (c *Client) TradeNoAio() {
-	ecpayReq, _ := http.NewRequest("POST", c.vendor+"/PaymentMedia/TradeNoAio", nil)
-	ecpayReq.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+func (c *Client) TradeNoAio(statement payment.Statement) (string, error) {
+	resp, err := c.do(statement)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
 
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	respStr := bytes.NewBuffer(bodyBytes).String()
+
+	return respStr, nil
 }
 
 // FundingReconDetail (下載信用卡撥款對帳資料檔).
-func (c *Client) FundingReconDetail() {
-	ecpayReq, _ := http.NewRequest("POST", c.vendor+"/CreditDetail/FundingReconDetail", nil)
-	ecpayReq.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+func (c *Client) FundingReconDetail(statement creditcard.Statement) (string, error) {
+	resp, err := c.do(statement)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
 
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	respStr := bytes.NewBuffer(bodyBytes).String()
+
+	return respStr, nil
 }

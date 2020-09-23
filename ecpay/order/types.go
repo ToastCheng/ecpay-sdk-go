@@ -64,12 +64,12 @@ const (
 type UnionPayType string
 
 const (
-	// UnionPayTypeChooseInWebPage customer choose whether use UnionPay or not in webpage (消費者於交易頁面可選擇是否使用銀聯交易).
-	UnionPayTypeChooseInWebPage UnionPayType = "0"
-	// UnionPayTypeYes use UnionPay (只使用銀聯卡交易,且綠界會將交易頁面直接導到銀聯網站).
-	UnionPayTypeYes UnionPayType = "1"
-	// UnionPayTypeNo do not use UnionPay (不可使用銀聯卡,綠界會將交易頁面隱藏銀聯選項).
-	UnionPayTypeNo UnionPayType = "2"
+	// UnionPayTypeSelect customer choose whether use UnionPay or not in webpage (消費者於交易頁面可選擇是否使用銀聯交易).
+	UnionPayTypeSelect UnionPayType = "0"
+	// UnionPayTypeOnly use UnionPay (只使用銀聯卡交易,且綠界會將交易頁面直接導到銀聯網站).
+	UnionPayTypeOnly UnionPayType = "1"
+	// UnionPayTypeHidden do not use UnionPay (不可使用銀聯卡,綠界會將交易頁面隱藏銀聯選項).
+	UnionPayTypeHidden UnionPayType = "2"
 )
 
 // PaymentType defines the struct of payment type options (銀聯卡交易選項).

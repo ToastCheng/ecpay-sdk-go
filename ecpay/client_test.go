@@ -5,6 +5,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/toastcheng/ecpay-sdk-go/ecpay/creditcard"
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/order"
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/payment"
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/trade"
@@ -92,6 +93,36 @@ func TestQueryCreditCardPeriodInfo(t *testing.T) {
 	}
 
 	_, err := client.QueryCreditCardPeriodInfo(info)
+	if err != nil {
+		log.Fatalf("failed to QueryTradeInfo: %v", err)
+	}
+}
+
+func TestDoAction(t *testing.T) {
+	client := getTestClient()
+	a := creditcard.Action{
+		MerchantTradeNo: "NO123",
+		Action:          creditcard.ActionTypeC,
+	}
+
+	_, err := client.DoAction(a)
+	if err != nil {
+		log.Fatalf("failed to QueryTradeInfo: %v", err)
+	}
+}
+
+func TestTradeNoAio(t *testing.T) {
+	client := getTestClient()
+	statement := payment.Statement{
+		MerchantTradeNo: "NO123",
+		DateType:        "2",
+		BeginDate:       "2015-02-12",
+		EndDate:         "2016-02-12",
+		MediaFormated:   "1",
+	}
+
+	resp, err := client.TradeNoAio(statement)
+	log.Print(resp)
 	if err != nil {
 		log.Fatalf("failed to QueryTradeInfo: %v", err)
 	}
