@@ -1,12 +1,13 @@
 # ECPay SDK for Go
 
-[![license](https://img.shields.io/badge/license-MIT-green)](https://github.com/toastcheng/ecpay/blob/master/LICENSE.md)
+[![license](https://img.shields.io/badge/license-MIT-blue)](https://github.com/toastcheng/ecpay/blob/master/LICENSE.md)
+[![GoDoc](https://img.shields.io/badge/go-doc-blue)](https://pkg.go.dev/github.com/toastcheng/ecpay-sdk-go/ecpay)
 
 ## Introduction
 This is ECPay SDK for Golang.
 
 ## Documentation
-* Go Doc : https://godoc.org/github.com/toastcheng/ecpay-sdk-go
+* Go Doc : https://pkg.go.dev/github.com/toastcheng/ecpay-sdk-go/ecpay
 * ECPay API : https://www.ecpay.com.tw/Service/API_Dwnld
 
 ## Requirements
