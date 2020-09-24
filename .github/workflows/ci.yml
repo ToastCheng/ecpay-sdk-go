@@ -16,7 +16,7 @@ jobs:
         cd ecpay && go mod download
     - name: Run Unit tests
       run: |
-        cd ecpay && go test -race -covermode atomic -coverprofile=../covprofile ./...
+        cd ecpay && go test -race -covermode atomic -coverprofile=covprofile ./...
     # - name: Install goveralls
     #   env:
     #     GO111MODULE: off
@@ -26,7 +26,5 @@ jobs:
         COVERALLS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         go get github.com/mattn/goveralls
-        ls ${GOROOT}/bin/
-        go env
-        env
+        cd ecpay
         /home/runner/go/bin/goveralls -coverprofile=covprofile -service=github
