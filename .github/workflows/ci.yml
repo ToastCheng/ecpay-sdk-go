@@ -26,4 +26,5 @@ jobs:
         COVERALLS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         go get github.com/mattn/goveralls
+        ls ${GOROOT}/bin/
         ${GOROOT}/bin/goveralls -coverprofile=covprofile -service=github

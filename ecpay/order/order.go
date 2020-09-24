@@ -355,7 +355,7 @@ func (o Order) ToFormData() url.Values {
 		// might be a typo in ECPay server.
 		ecpayReq["CarruerType"] = []string{string(o.Invoice.CarrierType)}
 		ecpayReq["CarruerNum"] = []string{o.Invoice.CarrierNum}
-		// TODO: use '|' to seperate multiple items.
+		// TODO: use '|' to separate multiple items.
 		ecpayReq["InvoiceItemName"] = []string{o.Invoice.InvoiceItemName}
 		ecpayReq["InvoiceItemCount"] = []string{o.Invoice.InvoiceItemCount}
 		ecpayReq["InvoiceItemWord"] = []string{o.Invoice.InvoiceItemWord}
