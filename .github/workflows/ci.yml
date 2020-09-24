@@ -29,4 +29,4 @@ jobs:
         ls ${GOROOT}/bin/
         go env
         env
-        ${GOPATH}/bin/goveralls -coverprofile=covprofile -service=github
+        /home/runner/go/bin/goveralls -coverprofile=covprofile -service=github
