@@ -2,6 +2,7 @@
 
 [![license](https://img.shields.io/badge/license-MIT-blue)](https://github.com/toastcheng/ecpay/blob/master/LICENSE.md)
 [![GoDoc](https://img.shields.io/badge/go-doc-blue)](https://pkg.go.dev/github.com/toastcheng/ecpay-sdk-go/ecpay)
+[![Go Report Card](https://goreportcard.com/badge/github.com/toastcheng/ecpay-sdk-go)](https://goreportcard.com/report/github.com/toastcheng/ecpay-sdk-go)
 
 ## Introduction
 This is ECPay SDK for Golang.

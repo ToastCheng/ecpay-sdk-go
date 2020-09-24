@@ -27,4 +27,6 @@ jobs:
       run: |
         go get github.com/mattn/goveralls
         ls ${GOROOT}/bin/
+        go env
+        env
         ${GOROOT}/bin/goveralls -coverprofile=covprofile -service=github
