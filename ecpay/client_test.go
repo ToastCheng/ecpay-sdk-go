@@ -2,12 +2,13 @@ package ecpay
 
 import (
 	"log"
-	"strings"
 	"testing"
 
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/order"
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/payment"
 	"github.com/toastcheng/ecpay-sdk-go/ecpay/trade"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func getTestClient() *Client {
@@ -20,7 +21,6 @@ func getTestClient() *Client {
 
 func TestCreateOrderAll(t *testing.T) {
 	client := getTestClient()
-	items := []string{"item1", "item2"}
 	order := order.Order{
 		MerchantTradeNo:   "NO123",
 		MerchantTradeDate: "2020/10/10 10:10:10",
@@ -28,23 +28,29 @@ func TestCreateOrderAll(t *testing.T) {
 		ChoosePayment:     order.ChoosePaymentTypeAll,
 		TotalAmount:       100,
 		PaymentType:       order.PaymentTypeAIO,
-		ItemName:          MultipleItems(items),
+		ItemName:          FormatItemName([]string{"item1", "item2"}),
 		TradeDesc:         "description",
 		ReturnURL:         "https://abc.com",
-		NeedExtraPaidInfo: false,
+		NeedExtraPaidInfo: order.NeedExtraPaidInfoTypeNo,
+		IgnorePayment: FormatIgnorePayment(IgnorePaymentOption{
+			CVS: true,
+		}),
 		Invoice: &order.InvoiceParam{
-			CustomerEmail: "abc@gmail.com",
+			CustomerEmail:   "abc@gmail.com",
+			CarrierType:     order.CarrierTypeCellphone,
+			InvoiceItemName: FormatInvoiceItem([]string{"商品1", "商品2"}),
 		},
 		Credit: &order.CreditParam{},
+		ATM: &order.ATMParam{
+			ExpireDate: 34,
+		},
 	}
 
 	resp, err := client.AioCheckOut(order)
 	if err != nil {
 		log.Fatalf("failed to AioCheckOut: %v", err)
 	}
-	if strings.Contains(resp, "交易失敗 Transaction failed") {
-		log.Fatalf("failed to AioCheckOut: %s", resp)
-	}
+	assert.Contains(t, resp, "交易失敗 Transaction failed")
 }
 
 func TestQueryTradeInfo(t *testing.T) {

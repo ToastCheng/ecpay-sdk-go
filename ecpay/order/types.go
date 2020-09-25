@@ -167,3 +167,61 @@ const (
 	// ChooseSubpaymentTypeBarcode .
 	ChooseSubpaymentTypeBarcode ChooseSubpaymentType = "BARCODE"
 )
+
+// NeedExtraPaidInfoType defines the struct of extra payment info options (是否需要額外的付款資訊).
+type NeedExtraPaidInfoType string
+
+const (
+	NeedExtraPaidInfoTypeYes NeedExtraPaidInfoType = "Y"
+	NeedExtraPaidInfoTypeNo  NeedExtraPaidInfoType = "N"
+)
+
+// InvoiceMarkType defines the struct of invoice options (電子發票開立註記).
+type InvoiceMarkType string
+
+const (
+	InvoiceMarkTypeYes InvoiceMarkType = "Y"
+	InvoiceMarkTypeNo  InvoiceMarkType = "N"
+)
+
+// LanguageType defines the struct of language options (語系設定).
+type LanguageType string
+
+const (
+	LanguageTypeEnglish           LanguageType = "ENG"
+	LanguageTypeKorean            LanguageType = "KOR"
+	LanguageTypeJapanese          LanguageType = "JPN"
+	LanguageTypeSimplifiedChinese LanguageType = "CHI"
+)
+
+// BindingCardType defines the struct of binding card options (記憶卡號).
+type BindingCardType string
+
+const (
+	BindingCardTypeYes BindingCardType = "1"
+	BindingCardTypeNo  BindingCardType = "0"
+)
+
+// RedeemType defines the struct of redeem options (信用卡是否使用紅利折抵).
+type RedeemType string
+
+const (
+	RedeemTypeYes RedeemType = "Y"
+	RedeemTypeNo  RedeemType = "N"
+)
+
+// ClearanceMarkType defines the struct of redeem options (通關方式).
+type ClearanceMarkType string
+
+const (
+	ClearanceMarkTypeNormal  ClearanceMarkType = "1"
+	ClearanceMarkTypeCustoms ClearanceMarkType = "2"
+)
+
+// PrintType defines the struct of redeem options (列印註記).
+type PrintType string
+
+const (
+	PrintTypeYes PrintType = "1"
+	PrintTypeNo  PrintType = "0"
+)

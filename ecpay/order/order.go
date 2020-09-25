@@ -1,13 +1,10 @@
 package order
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/url"
-	"strconv"
-	"time"
-
-	"github.com/google/uuid"
 )
 
 // Order defines the structure of an order.
@@ -41,15 +38,15 @@ type Order struct {
 	// Remark (備註欄位).
 	Remark string `json:"Remark,omitempty"`
 	// NeedExtraPaidInfo (是否需要額外的付款資訊).
-	NeedExtraPaidInfo bool `json:"NeedExtraPaidInfo,omitempty"`
+	NeedExtraPaidInfo NeedExtraPaidInfoType `json:"NeedExtraPaidInfo,omitempty"`
 	// DeviceSource (裝置來源).
-	deviceSource string `json:"DeviceSource"`
+	DeviceSource string `json:"DeviceSource"`
 	// IgnorePayment (隱藏付款).
 	IgnorePayment string `json:"IgnorePayment,omitempty"`
 	// PlatformID (特約合作平台商代號).
 	PlatformID string `json:"PlatformID,omitempty"`
 	// InvoiceMark (電子發票開立註記).
-	InvoiceMark bool `json:"InvoiceMark,omitempty"`
+	InvoiceMark InvoiceMarkType `json:"InvoiceMark,omitempty"`
 	// CustomField1 (自訂名稱欄位1).
 	CustomField1 string `json:"CustomField1,omitempty"`
 	// CustomField2 (自訂名稱欄位2).
@@ -61,7 +58,7 @@ type Order struct {
 	// EncryptType (CheckMacValue 加密類型).
 	EncryptType string `json:"EncryptType,omitempty"`
 	// Language (語系設定).
-	Language string `json:"Language,omitempty"`
+	Language LanguageType `json:"Language,omitempty"`
 
 	ATM        *ATMParam          `json:"ATM,omitempty"`
 	CVSBarcode *CVSOrBarcodeParam `json:"CVSBarcode,omitempty"`
@@ -72,109 +69,110 @@ type Order struct {
 // ATMParam defines the parameters tailored for ATM transaction.
 type ATMParam struct {
 	// ExpireDate (允許繳費有效天數).
-	ExpireDate string
+	ExpireDate int `json:"ExpireDate,omitempty"`
 	// PaymentInfoURL (Server端回傳付款相關資訊).
-	PaymentInfoURL string
+	PaymentInfoURL string `json:"PaymentInfoURL,omitempty"`
 	// ClientRedirectURL (Client端回傳付款相關資訊).
-	ClientRedirectURL string
+	ClientRedirectURL string `json:"ClientRedirectURL,omitempty"`
 }
 
 // CVSOrBarcodeParam defines the parameters tailored for CVS or bar code transaction.
 type CVSOrBarcodeParam struct {
 	// StoreExpireDate (超商繳費截止時間).
-	StoreExpireDate string
+	// unit: CVS (min), Barcode (day)
+	StoreExpireDate int `json:"StoreExpireDate,omitempty"`
 	// Desc1(交易描述1).
-	Desc1 string
+	Desc1 string `json:"Desc1,omitempty"`
 	// Desc2 (交易描述2).
-	Desc2 string
+	Desc2 string `json:"Desc2,omitempty"`
 	// Desc3 (交易描述3).
-	Desc3 string
+	Desc3 string `json:"Desc3,omitempty"`
 	// Desc4 (交易描述4).
-	Desc4 string
+	Desc4 string `json:"Desc4,omitempty"`
 	// PaymentInfoURL (Server端回傳付款相關資訊).
-	PaymentInfoURL string
+	PaymentInfoURL string `json:"PaymentInfoURL,omitempty"`
 	// ClientRedirectURL (Client端回傳付款方式相關資訊).
-	ClientRedirectURL string
+	ClientRedirectURL string `json:"ClientRedirectURL,omitempty"`
 }
 
 // CreditParam defines the parameters tailored for credit card transaction.
 type CreditParam struct {
 	// BindingCard (記憶卡號).
-	BindingCard string
+	BindingCard BindingCardType `json:"BindingCard,omitempty"`
 	// MerchantMemberID (記憶卡號識別碼).
-	MerchantMemberID string
+	MerchantMemberID string `json:"MerchantMemberID,omitempty"`
 	// Language (語系設定).
-	Language string
+	Language string `json:"Language,omitempty"`
 
 	// 一次付清
 	// Redeem (信用卡是否使用紅利折抵).
-	Redeem bool
+	Redeem RedeemType `json:"Redeem,omitempty"`
 	// UnionPay (銀聯卡交易選項).
-	UnionPay UnionPayType
+	UnionPay UnionPayType `json:"UnionPay,omitempty"`
 
 	// 分期付款
 	// CreditInstallment (刷卡分期期數).
-	CreditInstallment string
+	CreditInstallment string `json:"CreditInstallment,omitempty"`
 
 	// 定期定額
-	PeriodAmount int
+	PeriodAmount int `json:"PeriodAmount,omitempty"`
 	// PeriodType (週期種類).
-	PeriodType PeriodType
+	PeriodType PeriodType `json:"PeriodType,omitempty"`
 	// Frequency (執行頻率).
-	Frequency int
+	Frequency int `json:"Frequency,omitempty"`
 	// ExecTimes (執行次數).
-	ExecTimes int
+	ExecTimes int `json:"ExecTimes,omitempty"`
 	// PeriodReturnURL (定期定額的執行結果回應URL).
-	PeriodReturnURL string
+	PeriodReturnURL string `json:"PeriodReturnURL,omitempty"`
 }
 
 // InvoiceParam defines the parameters for invoice specific settings.
 type InvoiceParam struct {
 	// RelateNumber (特店自訂編號).
-	RelateNumber string
+	RelateNumber string `json:"RelateNumber,omitempty"`
 	// TaxType (課稅類別).
-	TaxType TaxType
+	TaxType TaxType `json:"TaxType,omitempty"`
 	// Donation (捐贈註記).
-	Donation DonationType
+	Donation DonationType `json:"Donation,omitempty"`
 	// Print (列印註記).
-	Print bool
+	Print bool `json:"Print,omitempty"`
 	// InvoiceItemName (商品名稱).
-	InvoiceItemName string
+	InvoiceItemName string `json:"InvoiceItemName,omitempty"`
 	// InvoiceItemCount (商品數量).
-	InvoiceItemCount string
+	InvoiceItemCount string `json:"InvoiceItemCount,omitempty"`
 	// DelayDay (延遲天數).
-	DelayDay string
+	DelayDay int `json:"DelayDay,omitempty"`
 	// InvType (字軌類別).
-	InvType string
+	InvType string `json:"InvType,omitempty"`
 
 	// CustomerID (客戶編號).
-	CustomerID string
+	CustomerID string `json:"CustomerID,omitempty"`
 	// CustomerIdentifier (統一編號).
-	CustomerIdentifier string
+	CustomerIdentifier string `json:"CustomerIdentifier,omitempty"`
 	// CustomerName (客戶名稱).
-	CustomerName string
+	CustomerName string `json:"CustomerName,omitempty"`
 	// CustomerAddr (客戶地址).
-	CustomerAddr string
+	CustomerAddr string `json:"CustomerAddr,omitempty"`
 	// CustomerPhone (客戶手機號碼).
-	CustomerPhone string
+	CustomerPhone string `json:"CustomerPhone,omitempty"`
 	// CustomerEmail (客戶電子信箱).
-	CustomerEmail string
+	CustomerEmail string `json:"CustomerEmail,omitempty"`
 	// ClearanceMark (通關方式).
-	ClearanceMark string
+	ClearanceMark ClearanceMarkType `json:"ClearanceMark,omitempty"`
 	// CarrierType (載具類別).
-	CarrierType CarrierType
+	CarrierType CarrierType `json:"CarruerType,omitempty"`
 	// CarrierNum (載具編號).
-	CarrierNum string
+	CarrierNum string `json:"CarruerNum,omitempty"`
 	// LoveCode (捐贈碼).
-	LoveCode string
+	LoveCode string `json:"LoveCode,omitempty"`
 	// InvoiceItemWord (商品單位).
-	InvoiceItemWord string
+	InvoiceItemWord string `json:"InvoiceItemWord,omitempty"`
 	// InvoiceItemPrice (商品價格).
 	InvoiceItemPrice string
 	// InvoiceItemTaxType (商品課稅別).
-	InvoiceItemTaxType string
+	InvoiceItemTaxType TaxType `json:"InvoiceItemTaxType,omitempty"`
 	// InvoiceRemark (備註).
-	InvoiceRemark string
+	InvoiceRemark string `json:"InvoiceRemark,omitempty"`
 }
 
 // Validate validate if the order struct is valid.
@@ -198,8 +196,8 @@ func (o Order) Validate() (bool, error) {
 	if o.PaymentType == "" {
 		return false, errors.New("PaymentType should not be empty")
 	}
-	if len(o.ItemName) == 0 {
-		return false, errors.New("ItemNames should not be empty")
+	if len(o.ItemName) == 0 || len(o.ItemName) > 400 {
+		return false, errors.New("ItemName should not be empty and within 400 words")
 	}
 	if o.TradeDesc == "" {
 		return false, errors.New("TradeDesc should not be empty")
@@ -233,134 +231,109 @@ func (o Order) Validate() (bool, error) {
 	if len(o.OrderResultURL) > 200 {
 		return false, errors.New("OrderResultURL should not exceed 200")
 	}
+	if len(o.CustomField1) > 50 ||
+		len(o.CustomField2) > 50 ||
+		len(o.CustomField3) > 50 ||
+		len(o.CustomField4) > 50 {
+		return false, errors.New("CustomField should not exceed 50")
+	}
 
-	if ci := o.Invoice.CustomerIdentifier; ci != "" {
-		if len(ci) != 8 {
-			return false, errors.New("CustomerIdentifier has to fill fixed length of 8 digits")
-		}
-		if o.Invoice.CarrierType == "" {
-			return false, errors.New("CarruerType does not fill any value, when CustomerIdentifier have value")
-		}
-		if !o.Invoice.Print {
-			return false, errors.New("Print has to be true, when CustomerIdentifier have value")
-		}
-		if o.Invoice.Donation == DonationTypeNo {
-			return false, errors.New("Donation has to be false, when CustomerIdentifier have value")
+	// atm.
+	if atm := o.ATM; atm != nil {
+		if atm.ExpireDate > 60 || atm.ExpireDate < 1 {
+			return false, errors.New("ExpireDate should be in the range of 1-60")
 		}
 	}
 
-	if o.Invoice.Print {
-		if o.Invoice.CustomerName == "" {
-			return false, errors.New("CustomerName should not be empty if Print is true")
-		}
-		if o.Invoice.CustomerAddr == "" {
-			return false, errors.New("CustomerAddr should not be empty if Print is true")
-		}
-		if o.Invoice.CarrierType == "" {
-			return false, errors.New("CarruerType should not be empty if Print is true")
+	// cvs.
+	if cvsbar := o.CVSBarcode; cvsbar != nil {
+		if len(cvsbar.Desc1) > 20 ||
+			len(cvsbar.Desc2) > 20 ||
+			len(cvsbar.Desc3) > 20 ||
+			len(cvsbar.Desc4) > 20 {
+			return false, errors.New("Desc should not exceed 20")
 		}
 	}
 
-	if o.Invoice.CustomerEmail == "" && o.Invoice.CustomerPhone == "" {
-		return false, errors.New("CustomerPhone should not be empty if CustomerEmail is empty")
-	}
-
-	if o.Invoice.Donation == DonationTypeYes {
-		if o.Invoice.Print {
-			return false, errors.New("Print should be false if Donation is set to true")
+	// invoice.
+	if inv := o.Invoice; inv != nil {
+		if ci := inv.CustomerIdentifier; ci != "" {
+			if len(ci) != 8 {
+				return false, errors.New("CustomerIdentifier has to fill fixed length of 8 digits")
+			}
+			if inv.CarrierType == "" {
+				return false, errors.New("CarruerType does not fill any value, when CustomerIdentifier have value")
+			}
+			if !inv.Print {
+				return false, errors.New("Print has to be true, when CustomerIdentifier have value")
+			}
+			if inv.Donation == DonationTypeNo {
+				return false, errors.New("Donation has to be false, when CustomerIdentifier have value")
+			}
 		}
-		if lc := o.Invoice.LoveCode; lc == "" {
-			return false, errors.New("LoveCode should not be empty if Donation is set to true")
-		} else if len(lc) < 3 || len(lc) > 7 {
-			return false, errors.New("LoveCode should be a 3-7 digit number")
+
+		if inv.Print {
+			if inv.CustomerName == "" {
+				return false, errors.New("CustomerName should not be empty if Print is true")
+			}
+			if inv.CustomerAddr == "" {
+				return false, errors.New("CustomerAddr should not be empty if Print is true")
+			}
+			if inv.CarrierType == "" {
+				return false, errors.New("CarruerType should not be empty if Print is true")
+			}
+		}
+
+		if inv.CustomerEmail == "" && inv.CustomerPhone == "" {
+			return false, errors.New("CustomerPhone should not be empty if CustomerEmail is empty")
+		}
+
+		if inv.Donation == DonationTypeYes {
+			if inv.Print {
+				return false, errors.New("Print should be false if Donation is set to true")
+			}
+			if lc := inv.LoveCode; lc == "" {
+				return false, errors.New("LoveCode should not be empty if Donation is set to true")
+			} else if len(lc) < 3 || len(lc) > 7 {
+				return false, errors.New("LoveCode should be a 3-7 digit number")
+			}
 		}
 	}
-
 	return true, nil
 }
 
 // ToFormData transform the Order struct to url.Values
 func (o Order) ToFormData() url.Values {
-	ecpayReq := map[string][]string{}
-	ecpayReq["ChoosePayment"] = []string{string(o.ChoosePayment)}
-	ecpayReq["EncryptType"] = []string{"1"}
-	ecpayReq["MerchantTradeNo"] = []string{
-		fmt.Sprintf("%s%d", uuid.New().String()[:5], time.Now().Unix()),
-	}
-	ecpayReq["MerchantTradeDate"] = []string{
-		time.Now().Format("2006/01/02 15:04:05"),
-	}
-	ecpayReq["PaymentType"] = []string{string(o.PaymentType)}
-	ecpayReq["TotalAmount"] = []string{strconv.Itoa(o.TotalAmount)}
-	ecpayReq["TradeDesc"] = []string{o.TradeDesc}
-	ecpayReq["ReturnURL"] = []string{o.ReturnURL}
-	ecpayReq["ItemName"] = []string{o.ItemName}
-	if o.NeedExtraPaidInfo {
-		ecpayReq["NeedExtraPaidInfo"] = []string{"Y"}
-	} else {
-		ecpayReq["NeedExtraPaidInfo"] = []string{"N"}
-	}
-	if o.InvoiceMark {
-		ecpayReq["InvoiceMark"] = []string{"Y"}
-	} else {
-		ecpayReq["InvoiceMark"] = []string{"N"}
-	}
-
-	cp := o.ChoosePayment
-	if cp == ChoosePaymentTypeAll || cp == ChoosePaymentTypeCredit {
-		// 一次付清
-		if o.Credit.Redeem {
-			if o.Credit.Redeem {
-				ecpayReq["Redeem"] = []string{"Y"}
-			} else {
-				ecpayReq["Redeem"] = []string{"N"}
+	req := url.Values{}
+	mp := map[string]interface{}{}
+	databytes, _ := json.Marshal(o)
+	json.Unmarshal(databytes, &mp)
+	for k, v := range mp {
+		if k == "Invoice" ||
+			k == "ATM" ||
+			k == "CVSBarcode" ||
+			k == "Credit" {
+			for kk, vv := range v.(map[string]interface{}) {
+				switch t := vv.(type) {
+				case int:
+					req.Set(kk, string(t))
+				case float32, float64:
+					req.Set(kk, fmt.Sprintf("%d", t))
+				case string:
+					req.Set(kk, t)
+				}
 			}
-			ecpayReq["UnionPay"] = []string{string(o.Credit.UnionPay)}
-
-		} else if o.Credit.CreditInstallment != "" {
-			// 分期付款
-
-		} else if o.Credit.PeriodAmount != 0 ||
-			// 定期定額
-			o.Credit.PeriodType == PeriodTypeDay ||
-			o.Credit.Frequency != 0 ||
-			o.Credit.ExecTimes != 0 ||
-			o.Credit.PeriodReturnURL != "" {
-		}
-	}
-
-	if o.InvoiceMark {
-		ecpayReq["RelateNumber"] = []string{o.Invoice.RelateNumber}
-		ecpayReq["TaxType"] = []string{string(o.Invoice.TaxType)}
-		ecpayReq["DelayDay"] = []string{o.Invoice.DelayDay}
-		ecpayReq["InvType"] = []string{o.Invoice.InvType}
-		ecpayReq["Donation"] = []string{string(o.Invoice.Donation)}
-		if o.Invoice.Print {
-			ecpayReq["Print"] = []string{"1"}
 		} else {
-			ecpayReq["Print"] = []string{"0"}
+			switch t := v.(type) {
+			case int:
+				req.Set(k, string(t))
+			case float32, float64:
+				req.Set(k, fmt.Sprintf("%d", t))
+			case string:
+				req.Set(k, t)
+			}
 		}
-
-		ecpayReq["CustomerID"] = []string{o.Invoice.CustomerID}
-		ecpayReq["CustomerIdentifier"] = []string{o.Invoice.CustomerIdentifier}
-		ecpayReq["CustomerName"] = []string{o.Invoice.CustomerName}
-		ecpayReq["CustomerAddr"] = []string{o.Invoice.CustomerAddr}
-		ecpayReq["CustomerPhone"] = []string{o.Invoice.CustomerPhone}
-		ecpayReq["CustomerEmail"] = []string{o.Invoice.CustomerEmail}
-		ecpayReq["ClearanceMark"] = []string{o.Invoice.ClearanceMark}
-		ecpayReq["LoveCode"] = []string{o.Invoice.LoveCode}
-		ecpayReq["InvoiceItemTaxType"] = []string{string(o.Invoice.InvoiceItemTaxType)}
-		ecpayReq["InvoiceRemark"] = []string{o.Invoice.InvoiceRemark}
-
-		// might be a typo in ECPay server.
-		ecpayReq["CarruerType"] = []string{string(o.Invoice.CarrierType)}
-		ecpayReq["CarruerNum"] = []string{o.Invoice.CarrierNum}
-		// TODO: use '|' to separate multiple items.
-		ecpayReq["InvoiceItemName"] = []string{o.Invoice.InvoiceItemName}
-		ecpayReq["InvoiceItemCount"] = []string{o.Invoice.InvoiceItemCount}
-		ecpayReq["InvoiceItemWord"] = []string{o.Invoice.InvoiceItemWord}
-		ecpayReq["InvoiceItemPrice"] = []string{o.Invoice.InvoiceItemPrice}
 	}
-
-	return ecpayReq
+	req.Set("EncryptType", "1")
+	return req
 }
