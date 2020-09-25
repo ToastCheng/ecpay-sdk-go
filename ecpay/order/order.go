@@ -62,8 +62,8 @@ type Order struct {
 
 	ATM        *ATMParam          `json:"ATM,omitempty"`
 	CVSBarcode *CVSOrBarcodeParam `json:"CVSBarcode,omitempty"`
-	Credit     *CreditParam       `json:Credit",omitempty"`
-	Invoice    *InvoiceParam      `json:Invoice",omitempty"`
+	Credit     *CreditParam       `json:"Credit,omitempty"`
+	Invoice    *InvoiceParam      `json:"Invoice,omitempty"`
 }
 
 // ATMParam defines the parameters tailored for ATM transaction.
@@ -318,7 +318,7 @@ func (o Order) ToFormData() url.Values {
 				case int:
 					req.Set(kk, string(t))
 				case float32, float64:
-					req.Set(kk, fmt.Sprintf("%d", t))
+					req.Set(kk, fmt.Sprintf("%.0f", t))
 				case string:
 					req.Set(kk, t)
 				}
@@ -328,7 +328,7 @@ func (o Order) ToFormData() url.Values {
 			case int:
 				req.Set(k, string(t))
 			case float32, float64:
-				req.Set(k, fmt.Sprintf("%d", t))
+				req.Set(k, fmt.Sprintf("%.0f", t))
 			case string:
 				req.Set(k, t)
 			}
