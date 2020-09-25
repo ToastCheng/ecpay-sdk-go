@@ -7,10 +7,6 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-
-	"github.com/toastcheng/ecpay-sdk-go/ecpay/order"
-	"github.com/toastcheng/ecpay-sdk-go/ecpay/payment"
-	"github.com/toastcheng/ecpay-sdk-go/ecpay/trade"
 )
 
 // Client implements client for making ECPay api.
@@ -73,21 +69,21 @@ func (c *Client) do(p Payload) (*http.Response, error) {
 
 	var endpoint string
 	switch p.(type) {
-	case order.Order:
+	case Order:
 		endpoint = c.endpoint + "/Cashier/AioCheckOut/V5"
-	case trade.Info:
+	case TradeInfo:
 		endpoint = c.endpoint + "/Cashier/QueryTradeInfo/V5"
-	case payment.Info:
+	case PaymentInfo:
 		endpoint = c.endpoint + "/Cashier/QueryPaymentInfo"
-	case trade.Trade:
+	case Trade:
 		endpoint = c.endpoint + "/CreditDetail/QueryTrade/V2"
-	case payment.CreditCardPeriodInfo:
+	case CreditCardPeriodInfo:
 		endpoint = c.endpoint + "/Cashier/QueryCreditCardPeriodInfo"
-	case payment.Statement:
+	case Statement:
 		endpoint = c.vendor + "/PaymentMedia/TradeNoAio"
-	case payment.CreditCardAction:
+	case CreditCardAction:
 		endpoint = c.endpoint + "/CreditDetail/DoAction"
-	case payment.CreditCardStatement:
+	case CreditCardStatement:
 		endpoint = c.endpoint + "/CreditDetail/FundingReconDetail"
 	default:
 		endpoint = c.endpoint
@@ -107,7 +103,7 @@ func (c *Client) do(p Payload) (*http.Response, error) {
 }
 
 // AioCheckOut sends an order to ECPay server (產生訂單).
-func (c *Client) AioCheckOut(order order.Order) (string, error) {
+func (c *Client) AioCheckOut(order Order) (string, error) {
 	resp, err := c.do(order)
 	if err != nil {
 		return "", err
@@ -123,7 +119,7 @@ func (c *Client) AioCheckOut(order order.Order) (string, error) {
 }
 
 // QueryTradeInfo queries a single trade info (查詢訂單).
-func (c *Client) QueryTradeInfo(info trade.Info) (string, error) {
+func (c *Client) QueryTradeInfo(info TradeInfo) (string, error) {
 	resp, err := c.do(info)
 	if err != nil {
 		return "", err
@@ -139,7 +135,7 @@ func (c *Client) QueryTradeInfo(info trade.Info) (string, error) {
 }
 
 // QueryTrade queries a single creadit card trade (查詢信用卡單筆明細記錄).
-func (c *Client) QueryTrade(trade trade.Trade) (map[string]interface{}, error) {
+func (c *Client) QueryTrade(trade Trade) (map[string]interface{}, error) {
 	resp, err := c.do(trade)
 	if err != nil {
 		return nil, err
@@ -152,7 +148,7 @@ func (c *Client) QueryTrade(trade trade.Trade) (map[string]interface{}, error) {
 }
 
 // QueryPaymentInfo queries payment info of ATM/CVS/Barcode (查詢 ATM/CVS/BARCODE 取號結果).
-func (c *Client) QueryPaymentInfo(info payment.Info) (map[string]interface{}, error) {
+func (c *Client) QueryPaymentInfo(info PaymentInfo) (map[string]interface{}, error) {
 	resp, err := c.do(info)
 	if err != nil {
 		return nil, err
@@ -179,7 +175,7 @@ func (c *Client) QueryPaymentInfo(info payment.Info) (map[string]interface{}, er
 }
 
 // QueryCreditCardPeriodInfo queries credit card periodic payment (信用卡定期定額訂單查詢).
-func (c *Client) QueryCreditCardPeriodInfo(info payment.CreditCardPeriodInfo) (map[string]interface{}, error) {
+func (c *Client) QueryCreditCardPeriodInfo(info CreditCardPeriodInfo) (map[string]interface{}, error) {
 	resp, err := c.do(info)
 	if err != nil {
 		return nil, err
@@ -193,7 +189,7 @@ func (c *Client) QueryCreditCardPeriodInfo(info payment.CreditCardPeriodInfo) (m
 }
 
 // DoAction fires an credit card refund action (信用卡請退款功能).
-func (c *Client) DoAction(action payment.CreditCardAction) (map[string]interface{}, error) {
+func (c *Client) DoAction(action CreditCardAction) (map[string]interface{}, error) {
 	resp, err := c.do(action)
 	if err != nil {
 		return nil, err
@@ -220,7 +216,7 @@ func (c *Client) DoAction(action payment.CreditCardAction) (map[string]interface
 }
 
 // TradeNoAio downloads the member statement (下載特店對帳媒體檔).
-func (c *Client) TradeNoAio(statement payment.Statement) (string, error) {
+func (c *Client) TradeNoAio(statement Statement) (string, error) {
 	resp, err := c.do(statement)
 	if err != nil {
 		return "", err
@@ -236,7 +232,7 @@ func (c *Client) TradeNoAio(statement payment.Statement) (string, error) {
 }
 
 // FundingReconDetail downloads the member statement (下載信用卡撥款對帳資料檔).
-func (c *Client) FundingReconDetail(statement payment.CreditCardStatement) (string, error) {
+func (c *Client) FundingReconDetail(statement CreditCardStatement) (string, error) {
 	resp, err := c.do(statement)
 	if err != nil {
 		return "", err

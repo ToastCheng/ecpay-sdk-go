@@ -1,4 +1,4 @@
-package order
+package ecpay
 
 import (
 	"encoding/json"

@@ -4,10 +4,6 @@ import (
 	"log"
 	"testing"
 
-	"github.com/toastcheng/ecpay-sdk-go/ecpay/order"
-	"github.com/toastcheng/ecpay-sdk-go/ecpay/payment"
-	"github.com/toastcheng/ecpay-sdk-go/ecpay/trade"
-
 	"github.com/stretchr/testify/assert"
 )
 
@@ -21,27 +17,27 @@ func getTestClient() *Client {
 
 func TestCreateOrderAll(t *testing.T) {
 	client := getTestClient()
-	order := order.Order{
+	order := Order{
 		MerchantTradeNo:   "NO123",
 		MerchantTradeDate: "2020/10/10 10:10:10",
 		PlatformID:        "3002599",
-		ChoosePayment:     order.ChoosePaymentTypeAll,
+		ChoosePayment:     ChoosePaymentTypeAll,
 		TotalAmount:       100,
-		PaymentType:       order.PaymentTypeAIO,
+		PaymentType:       PaymentTypeAIO,
 		ItemName:          FormatItemName([]string{"item1", "item2"}),
 		TradeDesc:         "description",
 		ReturnURL:         "https://abc.com",
-		NeedExtraPaidInfo: order.NeedExtraPaidInfoTypeNo,
+		NeedExtraPaidInfo: NeedExtraPaidInfoTypeNo,
 		IgnorePayment: FormatIgnorePayment(IgnorePaymentOption{
 			CVS: true,
 		}),
-		Invoice: &order.InvoiceParam{
+		Invoice: &InvoiceParam{
 			CustomerEmail:   "abc@gmail.com",
-			CarrierType:     order.CarrierTypeCellphone,
+			CarrierType:     CarrierTypeCellphone,
 			InvoiceItemName: FormatInvoiceItem([]string{"商品1", "商品2"}),
 		},
-		Credit: &order.CreditParam{},
-		ATM: &order.ATMParam{
+		Credit: &CreditParam{},
+		ATM: &ATMParam{
 			ExpireDate: 34,
 		},
 	}
@@ -55,7 +51,7 @@ func TestCreateOrderAll(t *testing.T) {
 
 func TestQueryTradeInfo(t *testing.T) {
 	client := getTestClient()
-	info := trade.Info{
+	info := TradeInfo{
 		MerchantTradeNo: "NO123",
 		TimeStamp:       "2020/10/10 10:10:10",
 	}
@@ -68,7 +64,7 @@ func TestQueryTradeInfo(t *testing.T) {
 
 func TestQueryTrade(t *testing.T) {
 	client := getTestClient()
-	trade := trade.Trade{
+	trade := Trade{
 		CreditRefundID: "NO123",
 	}
 
@@ -80,7 +76,7 @@ func TestQueryTrade(t *testing.T) {
 
 func TestQueryPaymentInfo(t *testing.T) {
 	client := getTestClient()
-	info := payment.Info{
+	info := PaymentInfo{
 		MerchantTradeNo: "NO123",
 		TimeStamp:       "2020/10/10 10:10:10",
 	}
@@ -93,7 +89,7 @@ func TestQueryPaymentInfo(t *testing.T) {
 
 func TestQueryCreditCardPeriodInfo(t *testing.T) {
 	client := getTestClient()
-	info := payment.CreditCardPeriodInfo{
+	info := CreditCardPeriodInfo{
 		MerchantTradeNo: "NO123",
 		TimeStamp:       "2020/10/10 10:10:10",
 	}
@@ -106,9 +102,9 @@ func TestQueryCreditCardPeriodInfo(t *testing.T) {
 
 func TestDoAction(t *testing.T) {
 	client := getTestClient()
-	a := payment.CreditCardAction{
+	a := CreditCardAction{
 		MerchantTradeNo: "NO123",
-		Action:          payment.ActionTypeC,
+		Action:          ActionTypeC,
 	}
 
 	_, err := client.DoAction(a)
@@ -119,7 +115,7 @@ func TestDoAction(t *testing.T) {
 
 func TestTradeNoAio(t *testing.T) {
 	client := getTestClient()
-	statement := payment.Statement{
+	statement := Statement{
 		MerchantTradeNo: "NO123",
 		DateType:        "2",
 		BeginDate:       "2015-02-12",
