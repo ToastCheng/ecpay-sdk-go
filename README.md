@@ -28,40 +28,40 @@ go get github.com/toastcheng/ecpay-sdk-go/ecpay
 package ecpay
 
 import (
-	"log"
+    "log"
 
     "github.com/toastcheng/ecpay-sdk-go/ecpay"
-	"github.com/toastcheng/ecpay-sdk-go/ecpay/order"
+    "github.com/toastcheng/ecpay-sdk-go/ecpay/order"
 )
 
 func main() {
     // new a client.
-	client, err := ecpay.NewClient("2000132", "5294y06JbISpM5x9", "v77hoKGq4kWxNNIS", ecpay.WithSandbox)
-	if err != nil {
-		log.Fatalf("failed to new client: %v", err)
+    client, err := ecpay.NewClient("2000132", "5294y06JbISpM5x9", "v77hoKGq4kWxNNIS", ecpay.WithSandbox)
+    if err != nil {
+        log.Fatalf("failed to new client: %v", err)
     }
     // create an order of two item: item1, item2.
 	items := []string{"item1", "item2"}
-	order := order.Order{
-		MerchantTradeNo:   "NO123",
-		MerchantTradeDate: "2020/10/10 10:10:10",
-		PlatformID:        "3002599",
-		ChoosePayment:     order.ChoosePaymentTypeAll,
-		TotalAmount:       100,
-		PaymentType:       order.PaymentTypeAIO,
-		ItemName:          MultipleItems(items),
-		TradeDesc:         "description",
-		ReturnURL:         "https://abc.com",
-		NeedExtraPaidInfo: false,
-		Invoice: &order.InvoiceParam{
-			CustomerEmail: "abc@gmail.com",
-		},
-		Credit: &order.CreditParam{},
-	}
+    order := order.Order{
+        MerchantTradeNo:   "NO123",
+        MerchantTradeDate: "2020/10/10 10:10:10",
+        PlatformID:        "3002599",
+        ChoosePayment:     order.ChoosePaymentTypeAll,
+        TotalAmount:       100,
+        PaymentType:       order.PaymentTypeAIO,
+        ItemName:          MultipleItems(items),
+        TradeDesc:         "description",
+        ReturnURL:         "https://abc.com",
+        NeedExtraPaidInfo: false,
+        Invoice: &order.InvoiceParam{
+            CustomerEmail: "abc@gmail.com",
+        },
+        Credit: &order.CreditParam{},
+    }
 
-	resp, err := client.AioCheckOut(order)
-	if err != nil {
-		log.Fatalf("failed to AioCheckOut: %v", err)
+    resp, err := client.AioCheckOut(order)
+    if err != nil {
+        log.Fatalf("failed to AioCheckOut: %v", err)
     }
     ...
 }
