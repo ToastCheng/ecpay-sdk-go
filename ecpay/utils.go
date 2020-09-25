@@ -1,7 +1,9 @@
 package ecpay
 
 import (
+	"net/url"
 	"strings"
+	"time"
 )
 
 // FormatItemName joins an array of item name with '#'.
@@ -75,4 +77,27 @@ func FormatCreditInstallmentOption(option CreditInstallmentOption) string {
 // Apply to InvoiceItemName, InvoiceItemCount, InvoiceItemWord, InvoiceItemPrice and InvoiceItemTaxType.
 func FormatInvoiceItem(items []string) string {
 	return strings.Join(items, "|")
+}
+
+// FormatDatetime convert time.Time into yyyy/MM/dd HH:mm:ss format.
+func FormatDatetime(time time.Time) string {
+	return time.Format("2006/01/02 15:04:05")
+}
+
+// FormatDate convert time.Time into yyyy/MM/dd HH:mm:ss format.
+func FormatDate(time time.Time) string {
+	return time.Format("2006-01-02")
+}
+
+// ParseQueryString parse the query string to map.
+func ParseQueryString(q string) (map[string]interface{}, error) {
+	uv, err := url.ParseQuery(q)
+	if err != nil {
+		return nil, err
+	}
+	mp := map[string]interface{}{}
+	for k, v := range uv {
+		mp[k] = v[0]
+	}
+	return mp, err
 }

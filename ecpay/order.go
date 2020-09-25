@@ -40,7 +40,7 @@ type Order struct {
 	// NeedExtraPaidInfo (是否需要額外的付款資訊).
 	NeedExtraPaidInfo NeedExtraPaidInfoType `json:"NeedExtraPaidInfo,omitempty"`
 	// DeviceSource (裝置來源).
-	DeviceSource string `json:"DeviceSource"`
+	DeviceSource string `json:"DeviceSource,omitempty"`
 	// IgnorePayment (隱藏付款).
 	IgnorePayment string `json:"IgnorePayment,omitempty"`
 	// PlatformID (特約合作平台商代號).
@@ -135,7 +135,7 @@ type InvoiceParam struct {
 	// Donation (捐贈註記).
 	Donation DonationType `json:"Donation,omitempty"`
 	// Print (列印註記).
-	Print bool `json:"Print,omitempty"`
+	Print PrintType `json:"Print,omitempty"`
 	// InvoiceItemName (商品名稱).
 	InvoiceItemName string `json:"InvoiceItemName,omitempty"`
 	// InvoiceItemCount (商品數量).
@@ -168,9 +168,9 @@ type InvoiceParam struct {
 	// InvoiceItemWord (商品單位).
 	InvoiceItemWord string `json:"InvoiceItemWord,omitempty"`
 	// InvoiceItemPrice (商品價格).
-	InvoiceItemPrice string
+	InvoiceItemPrice string `json:"InvoiceItemPrice,omitempty"`
 	// InvoiceItemTaxType (商品課稅別).
-	InvoiceItemTaxType TaxType `json:"InvoiceItemTaxType,omitempty"`
+	InvoiceItemTaxType string `json:"InvoiceItemTaxType,omitempty"`
 	// InvoiceRemark (備註).
 	InvoiceRemark string `json:"InvoiceRemark,omitempty"`
 }
@@ -183,9 +183,6 @@ func (o Order) Validate() (bool, error) {
 	}
 	if o.MerchantTradeDate == "" {
 		return false, errors.New("MerchantTradeDate should not be empty")
-	}
-	if o.PlatformID == "" {
-		return false, errors.New("PlatformID should not be empty")
 	}
 	if o.ChoosePayment == "" {
 		return false, errors.New("ChoosePayment should not be empty")
@@ -261,26 +258,20 @@ func (o Order) Validate() (bool, error) {
 			if len(ci) != 8 {
 				return false, errors.New("CustomerIdentifier has to fill fixed length of 8 digits")
 			}
-			if inv.CarrierType == "" {
-				return false, errors.New("CarruerType does not fill any value, when CustomerIdentifier have value")
-			}
-			if !inv.Print {
+			if inv.Print == PrintTypeNo {
 				return false, errors.New("Print has to be true, when CustomerIdentifier have value")
 			}
-			if inv.Donation == DonationTypeNo {
+			if inv.Donation == DonationTypeYes {
 				return false, errors.New("Donation has to be false, when CustomerIdentifier have value")
 			}
 		}
 
-		if inv.Print {
+		if inv.Print == PrintTypeYes {
 			if inv.CustomerName == "" {
 				return false, errors.New("CustomerName should not be empty if Print is true")
 			}
 			if inv.CustomerAddr == "" {
 				return false, errors.New("CustomerAddr should not be empty if Print is true")
-			}
-			if inv.CarrierType == "" {
-				return false, errors.New("CarruerType should not be empty if Print is true")
 			}
 		}
 
@@ -289,7 +280,7 @@ func (o Order) Validate() (bool, error) {
 		}
 
 		if inv.Donation == DonationTypeYes {
-			if inv.Print {
+			if inv.Print == PrintTypeYes {
 				return false, errors.New("Print should be false if Donation is set to true")
 			}
 			if lc := inv.LoveCode; lc == "" {

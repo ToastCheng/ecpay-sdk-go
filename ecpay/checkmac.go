@@ -25,11 +25,11 @@ func GetCheckMacValue(req url.Values, hashKey, hashIV string) string {
 
 	str += "HashIV=" + hashIV
 	str = url.QueryEscape(str)
-	str = strings.ReplaceAll(str, "%2d", "-")
-	str = strings.ReplaceAll(str, "%5f", "_")
-	str = strings.ReplaceAll(str, "%2e", ".")
+	str = strings.ReplaceAll(str, "%2D", "-")
+	str = strings.ReplaceAll(str, "%5F", "_")
+	str = strings.ReplaceAll(str, "%2E", ".")
 	str = strings.ReplaceAll(str, "%21", "!")
-	str = strings.ReplaceAll(str, "%2a", "*")
+	str = strings.ReplaceAll(str, "%2A", "*")
 	str = strings.ReplaceAll(str, "%28", "(")
 	str = strings.ReplaceAll(str, "%29", ")")
 	str = strings.ToLower(str)

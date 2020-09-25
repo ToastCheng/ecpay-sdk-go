@@ -9,6 +9,8 @@
 
 ## Introduction
 ECPay SDK for Golang.
+ECPay is a third party payment service in Taiwan, providing lots of payment options, such as ATM, web ATM, credit card, GooglePay, convenience code, etc.
+For developer who wants to enable your app to have payment service, it would be a good choice :).
 
 ## Documentation
 * Go Doc : https://pkg.go.dev/github.com/toastcheng/ecpay-sdk-go/ecpay
@@ -24,53 +26,53 @@ go get github.com/toastcheng/ecpay-sdk-go/ecpay
 * Go 1.12+
 
 ### Quick Examples
+#### Create a client:
+
+for dev (sandbox)
 ```go
-package ecpay
+client, err := ecpay.NewClient("<MERCHANT_ID>", "<HASH_KEY>", "<HASH_IV>", ecpay.WithSandbox)
+```
+for prod
+```go
+client, err := ecpay.NewClient("<MERCHANT_ID>", "<HASH_KEY>", "<HASH_IV>")
+```
 
-import (
-    "log"
-
-    "github.com/toastcheng/ecpay-sdk-go/ecpay"
-    "github.com/toastcheng/ecpay-sdk-go/ecpay/order"
-)
-
-func main() {
-    // new a client.
-    client, err := ecpay.NewClient("2000132", "5294y06JbISpM5x9", "v77hoKGq4kWxNNIS", ecpay.WithSandbox)
-    if err != nil {
-        log.Fatalf("failed to new client: %v", err)
-    }
-    order := order.Order{
-        MerchantTradeNo:   "NO123",
-        MerchantTradeDate: "2020/10/10 10:10:10",
-        PlatformID:        "3002599",
-        ChoosePayment:     order.ChoosePaymentTypeAll,
-        TotalAmount:       100,
-        PaymentType:       order.PaymentTypeAIO,
-        ItemName:          FormatItemName([]string{"item1", "item2"}),
-        TradeDesc:         "description",
-        ReturnURL:         "https://abc.com",
-        NeedExtraPaidInfo: order.NeedExtraPaidInfoTypeNo,
-        IgnorePayment: FormatIgnorePayment(IgnorePaymentOption{
-            CVS: true,
-        }),
-        Invoice: &order.InvoiceParam{
-            CustomerEmail:   "abc@gmail.com",
-            CarrierType:     order.CarrierTypeCellphone,
-            InvoiceItemName: FormatInvoiceItem([]string{"商品1", "商品2"}),
-        },
-        Credit: &order.CreditParam{},
-        ATM: &order.ATMParam{
-            ExpireDate: 34,
-        },
-    }
-
-    resp, err := client.AioCheckOut(order)
-    if err != nil {
-        log.Fatalf("failed to AioCheckOut: %v", err)
-    }
-    ...
+#### create an order:
+the order object is quite complex, make sure you check out the official document.
+```go
+order := Order{
+    MerchantTradeNo: fmt.Sprintf("%s%d", uuid.New().String()[:5], time.Now().Unix()%10000),
+    StoreID:           "",
+    MerchantTradeDate: FormatDatetime(time.Now()),
+    PaymentType:       PaymentTypeAIO,
+    TotalAmount:       2000,
+    TradeDesc:         "訂單測試",
+    ItemName:          FormatItemName([]string{"商品1", "商品2"}),
+    ReturnURL:         "https://www.ecpay.com.tw/return_url.php",
+    ChoosePayment:     ChoosePaymentTypeAll,
+    ClientBackURL:     "https://www.ecpay.com.tw/client_back_url.php",
+    ItemURL:           "https://www.ecpay.com.tw/item_url.php'",
+    Remark:            "交易備註",
+    OrderResultURL:    "https://www.ecpay.com.tw/order_result_url.php",
+    NeedExtraPaidInfo: NeedExtraPaidInfoTypeYes,
+    InvoiceMark:       InvoiceMarkTypeNo,
+    ATM: &ATMParam{
+        ExpireDate:     7,
+        PaymentInfoURL: "https://www.ecpay.com.tw/payment_info_url.php",
+    },
+    CVSBarcode: &CVSOrBarcodeParam{
+        StoreExpireDate: 15,
+        PaymentInfoURL:  "https://www.ecpay.com.tw/payment_info_url.php",
+    },
+    IgnorePayment: FormatIgnorePayment(IgnorePaymentOption{
+        CVS: true,
+    }),
+    Credit: &CreditParam{
+        BindingCard: BindingCardTypeNo,
+    },
 }
+
+resp, err := client.AioCheckOut(order)
 ```
 The response is in HTML text, just display a few line here:
 ```html
@@ -128,10 +130,66 @@ Which provides UI for customers to submit their order:
 </html>
 ...
 
+#### Full example:
+```go
+package ecpay
+
+import (
+    "log"
+
+    "github.com/toastcheng/ecpay-sdk-go/ecpay"
+    "github.com/toastcheng/ecpay-sdk-go/ecpay/order"
+)
+
+func main() {
+    // new a client.
+    client, err := ecpay.NewClient("2000132", "5294y06JbISpM5x9", "v77hoKGq4kWxNNIS", ecpay.WithSandbox)
+    if err != nil {
+        log.Fatalf("failed to new client: %v", err)
+    }
+    order := Order{
+		MerchantTradeNo: fmt.Sprintf("%s%d", uuid.New().String()[:5], time.Now().Unix()%10000),
+		StoreID:           "",
+		MerchantTradeDate: FormatDatetime(time.Now()),
+		PaymentType:       PaymentTypeAIO,
+		TotalAmount:       2000,
+		TradeDesc:         "訂單測試",
+		ItemName:          FormatItemName([]string{"商品1", "商品2"}),
+		ReturnURL:         "https://www.ecpay.com.tw/return_url.php",
+		ChoosePayment:     ChoosePaymentTypeAll,
+		ClientBackURL:     "https://www.ecpay.com.tw/client_back_url.php",
+		ItemURL:           "https://www.ecpay.com.tw/item_url.php'",
+		Remark:            "交易備註",
+		OrderResultURL:    "https://www.ecpay.com.tw/order_result_url.php",
+		NeedExtraPaidInfo: NeedExtraPaidInfoTypeYes,
+		InvoiceMark:       InvoiceMarkTypeNo,
+		ATM: &ATMParam{
+			ExpireDate:     7,
+			PaymentInfoURL: "https://www.ecpay.com.tw/payment_info_url.php",
+		},
+		CVSBarcode: &CVSOrBarcodeParam{
+			StoreExpireDate: 15,
+			PaymentInfoURL:  "https://www.ecpay.com.tw/payment_info_url.php",
+		},
+		IgnorePayment: FormatIgnorePayment(IgnorePaymentOption{
+			CVS: true,
+		}),
+		Credit: &CreditParam{
+			BindingCard: BindingCardTypeNo,
+		},
+	}
+
+	resp, err := client.AioCheckOut(order)
+    ...
+}
+```
+
+There are more examples in `client_test.go` and Godoc. 
+
 ## Contributing
 
 Contributions, issues and feature requests are welcome,
-Feel  [issues page](https://github.com/toastcheng/ecpay-sdk-go/issues).
+ please check out the [issues page](https://github.com/toastcheng/ecpay-sdk-go/issues).
 
 ## License
 

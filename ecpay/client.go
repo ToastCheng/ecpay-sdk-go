@@ -58,7 +58,6 @@ func (c *Client) do(p Payload) (*http.Response, error) {
 	form := p.ToFormData()
 	form.Set("MerchantID", c.merchantID)
 	form.Set("CheckMacValue", GetCheckMacValue(form, c.hashKey, c.hashIV))
-
 	formStr := form.Encode()
 	formStr = strings.ReplaceAll(formStr, "-", "%2d")
 	formStr = strings.ReplaceAll(formStr, "_", "%5f")
@@ -66,6 +65,8 @@ func (c *Client) do(p Payload) (*http.Response, error) {
 	formStr = strings.ReplaceAll(formStr, "(", "%28")
 	formStr = strings.ReplaceAll(formStr, ")", "%29")
 	formStr = strings.ReplaceAll(formStr, "+", "%20")
+	formStr = strings.ReplaceAll(formStr, ".", "%2e")
+	formStr = strings.ReplaceAll(formStr, "!", "%21")
 
 	var endpoint string
 	switch p.(type) {
@@ -80,11 +81,11 @@ func (c *Client) do(p Payload) (*http.Response, error) {
 	case CreditCardPeriodInfo:
 		endpoint = c.endpoint + "/Cashier/QueryCreditCardPeriodInfo"
 	case Statement:
-		endpoint = c.vendor + "/PaymentMedia/TradeNoAio"
+		endpoint = c.endpoint + "/CreditDetail/FundingReconDetail"
 	case CreditCardAction:
 		endpoint = c.endpoint + "/CreditDetail/DoAction"
 	case CreditCardStatement:
-		endpoint = c.endpoint + "/CreditDetail/FundingReconDetail"
+		endpoint = c.vendor + "/PaymentMedia/TradeNoAio"
 	default:
 		endpoint = c.endpoint
 	}
@@ -119,19 +120,22 @@ func (c *Client) AioCheckOut(order Order) (string, error) {
 }
 
 // QueryTradeInfo queries a single trade info (查詢訂單).
-func (c *Client) QueryTradeInfo(info TradeInfo) (string, error) {
+func (c *Client) QueryTradeInfo(info TradeInfo) (map[string]interface{}, error) {
 	resp, err := c.do(info)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-
-	return string(bodyBytes), nil
+	mp, err := ParseQueryString(string(bodyBytes))
+	if err != nil {
+		return nil, err
+	}
+	return mp, nil
 }
 
 // QueryTrade queries a single creadit card trade (查詢信用卡單筆明細記錄).
@@ -216,7 +220,7 @@ func (c *Client) DoAction(action CreditCardAction) (map[string]interface{}, erro
 }
 
 // TradeNoAio downloads the member statement (下載特店對帳媒體檔).
-func (c *Client) TradeNoAio(statement Statement) (string, error) {
+func (c *Client) TradeNoAio(statement CreditCardStatement) (string, error) {
 	resp, err := c.do(statement)
 	if err != nil {
 		return "", err
@@ -232,7 +236,7 @@ func (c *Client) TradeNoAio(statement Statement) (string, error) {
 }
 
 // FundingReconDetail downloads the member statement (下載信用卡撥款對帳資料檔).
-func (c *Client) FundingReconDetail(statement CreditCardStatement) (string, error) {
+func (c *Client) FundingReconDetail(statement Statement) (string, error) {
 	resp, err := c.do(statement)
 	if err != nil {
 		return "", err

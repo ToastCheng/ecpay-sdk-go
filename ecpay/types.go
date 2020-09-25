@@ -1,6 +1,5 @@
 package ecpay
 
-
 // ActionType defines the struct of credit card action.
 type ActionType string
 
@@ -239,4 +238,88 @@ type PrintType string
 const (
 	PrintTypeYes PrintType = "1"
 	PrintTypeNo  PrintType = "0"
+)
+
+// PayDateType defines the struct of pay date type options (查詢日期類別).
+type PayDateType string
+
+const (
+	PayDateTypeFund  PayDateType = "fund"
+	PayDateTypeClose PayDateType = "close"
+	PayDateTypeEnter PayDateType = "enter"
+)
+
+// DateType defines the struct of pay date type options (查詢日期類別).
+type DateType string
+
+const (
+	// DateTypePayment (付款日期).
+	DateTypePayment DateType = "2"
+	// DateTypeAllocation (撥款日期).
+	DateTypeAllocation DateType = "4"
+	// DateTypeOrder (訂單日期).
+	DateTypeOrder DateType = "6"
+)
+
+// MerchantPaymentType defines the struct of pay date type options (查詢日期類別).
+type MerchantPaymentType string
+
+const (
+	// MerchantPaymentTypeCreditCard (付款日期).
+	MerchantPaymentTypeCreditCard MerchantPaymentType = "01"
+	// DateTypeApproriation (網路ATM).
+	MerchantPaymentTypeWebATM MerchantPaymentType = "02"
+	// MerchantPaymentTypeATM (ATM).
+	MerchantPaymentTypeATM MerchantPaymentType = "03"
+	// MerchantPaymentTypeCVS (超商代碼).
+	MerchantPaymentTypeCVS MerchantPaymentType = "04"
+	// MerchantPaymentTypeBarcode (超商條碼).
+	MerchantPaymentTypeBarcode MerchantPaymentType = "05"
+)
+
+type PlatformStatusType string
+
+const (
+	// PlatformStatusTypeAll (全部).
+	PlatformStatusTypeAll PlatformStatusType = "0"
+	// PlatformStatusTypeNormal (一般).
+	PlatformStatusTypeNormal PlatformStatusType = "1"
+	// PlatformStatusTypePlatform (平台).
+	PlatformStatusTypePlatform PlatformStatusType = "2"
+)
+
+type PaymentStatusType string
+
+const (
+	// PaymentStatusTypeUnpaid (未付款).
+	PaymentStatusTypeUnpaid PaymentStatusType = "0"
+	// PaymentStatusTypePaid (已付款).
+	PaymentStatusTypePaid PaymentStatusType = "1"
+	// PaymentStatusTypeFailed (訂單失敗).
+	PaymentStatusTypeFailed PaymentStatusType = "2"
+)
+
+type AllocateStatusType string
+
+const (
+	// AllocateStatusTypeDone (已撥款).
+	AllocateStatusTypeDone AllocateStatusType = "0"
+	// AllocateStatusNotYet (未撥款).
+	AllocateStatusNotYet AllocateStatusType = "1"
+)
+
+type MediaFormatedType string
+
+const (
+	// MediaFormatedTypeOld (舊版格式).
+	MediaFormatedTypeOld MediaFormatedType = "0"
+	// MediaFormatedTypeNew (新版格式).
+	MediaFormatedTypeNew MediaFormatedType = "1"
+)
+
+type CharSetType string
+
+const (
+	CharSetTypeBig5 CharSetType = "1"
+	CharSetTypeUTF8 CharSetType = "2"
 )

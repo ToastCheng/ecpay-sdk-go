@@ -8,12 +8,13 @@ import (
 // CreditCardPeriodInfo defines the struct of trade info.
 type CreditCardPeriodInfo struct {
 	MerchantTradeNo string `json:"MerchantTradeNo,omitempty"`
-	TimeStamp       string `json:"TimeStamp,omitempty"`
+	TimeStamp       int64  `json:"TimeStamp,omitempty"`
 	PlatformID      string `json:"PlatformID,omitempty"`
 }
 
 // Validate validate if the trade struct is valid.
 func (c CreditCardPeriodInfo) Validate() (bool, error) {
+	// TODO: handle error
 	return true, nil
 }
 

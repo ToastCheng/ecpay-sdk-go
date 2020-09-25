@@ -29,3 +29,15 @@ func TestFormatCreditInstallmentOption(t *testing.T) {
 	assert.Equal(t, FormatCreditInstallmentOption(option), "3,12")
 
 }
+
+func TestFormatInvoiceItem(t *testing.T) {
+	items := []string{"item1", "item2"}
+	assert.Equal(t, FormatInvoiceItem(items), "item1|item2")
+}
+
+func TestParseQueryString(t *testing.T) {
+	mp, err := ParseQueryString("a=1&b=2")
+	assert.NoError(t, err)
+	assert.Equal(t, mp["a"], "1")
+	assert.Equal(t, mp["b"], "2")
+}

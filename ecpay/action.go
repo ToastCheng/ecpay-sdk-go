@@ -11,7 +11,7 @@ type CreditCardAction struct {
 	TradeNo         string     `json:"TradeNo,omitempty"`
 	Action          ActionType `json:"Action,omitempty"`
 	PlatformID      string     `json:"PlatformID,omitempty"`
-	TotalAmount     string     `json:"TotalAmount,omitempty"`
+	TotalAmount     int        `json:"TotalAmount,omitempty"`
 }
 
 // Validate validate if the trade struct is valid.

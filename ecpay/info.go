@@ -14,6 +14,7 @@ type TradeInfo struct {
 
 // Validate validate if the trade struct is valid.
 func (t TradeInfo) Validate() (bool, error) {
+	// TODO: handle error
 	return true, nil
 }
 
@@ -33,12 +34,13 @@ func (t TradeInfo) ToFormData() url.Values {
 // PaymentInfo defines the struct of trade info.
 type PaymentInfo struct {
 	MerchantTradeNo string `json:"MerchantTradeNo,omitempty"`
-	TimeStamp       string `json:"TimeStamp,omitempty"`
+	TimeStamp       int64  `json:"TimeStamp,omitempty"`
 	PlatformID      string `json:"PlatformID,omitempty"`
 }
 
 // Validate validate if the trade struct is valid.
 func (t PaymentInfo) Validate() (bool, error) {
+	// TODO: handle error
 	return true, nil
 }
 
