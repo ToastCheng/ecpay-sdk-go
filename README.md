@@ -40,8 +40,6 @@ func main() {
     if err != nil {
         log.Fatalf("failed to new client: %v", err)
     }
-    // create an order of two item: item1, item2.
-	items := []string{"item1", "item2"}
     order := order.Order{
         MerchantTradeNo:   "NO123",
         MerchantTradeDate: "2020/10/10 10:10:10",
@@ -49,14 +47,22 @@ func main() {
         ChoosePayment:     order.ChoosePaymentTypeAll,
         TotalAmount:       100,
         PaymentType:       order.PaymentTypeAIO,
-        ItemName:          MultipleItems(items),
+        ItemName:          FormatItemName([]string{"item1", "item2"}),
         TradeDesc:         "description",
         ReturnURL:         "https://abc.com",
-        NeedExtraPaidInfo: false,
+        NeedExtraPaidInfo: order.NeedExtraPaidInfoTypeNo,
+        IgnorePayment: FormatIgnorePayment(IgnorePaymentOption{
+            CVS: true,
+        }),
         Invoice: &order.InvoiceParam{
-            CustomerEmail: "abc@gmail.com",
+            CustomerEmail:   "abc@gmail.com",
+            CarrierType:     order.CarrierTypeCellphone,
+            InvoiceItemName: FormatInvoiceItem([]string{"商品1", "商品2"}),
         },
         Credit: &order.CreditParam{},
+        ATM: &order.ATMParam{
+            ExpireDate: 34,
+        },
     }
 
     resp, err := client.AioCheckOut(order)
