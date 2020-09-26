@@ -6,9 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/toastcheng/ecpay-sdk-go/ecpay"
-
 	"github.com/google/uuid"
+	"github.com/toastcheng/ecpay-sdk-go/ecpay"
 )
 
 func main() {
@@ -58,6 +57,18 @@ func main() {
 		fmt.Fprint(w, html)
 
 	})
+	mux.HandleFunc("/periodinfo", func(w http.ResponseWriter, r *http.Request) {
+		info := ecpay.CreditCardPeriodInfo{
+			MerchantTradeNo: "kncs20180804103310",
+			TimeStamp:       time.Now().Unix(),
+		}
 
+		resp, err := client.QueryCreditCardPeriodInfo(info)
+		if err != nil {
+			log.Print(err)
+		}
+		log.Print(resp)
+		fmt.Fprintf(w, "%v", resp)
+	})
 	http.ListenAndServe(":8080", mux)
 }

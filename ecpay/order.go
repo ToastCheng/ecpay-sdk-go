@@ -204,9 +204,6 @@ func (o Order) Validate() (bool, error) {
 	}
 
 	// check length.
-	if len(o.MerchantTradeNo) > 10 {
-		return false, errors.New("MerchantTradeNo should not exceed 10")
-	}
 	if len(o.StoreID) > 20 {
 		return false, errors.New("StoreID should not exceed 20")
 	}
@@ -317,6 +314,8 @@ func (o Order) ToFormData() url.Values {
 		} else {
 			switch t := v.(type) {
 			case int:
+				req.Set(k, string(t))
+			case int64:
 				req.Set(k, string(t))
 			case float32, float64:
 				req.Set(k, fmt.Sprintf("%.0f", t))

@@ -26,7 +26,7 @@ go get github.com/toastcheng/ecpay-sdk-go/ecpay
 * Go 1.12+
 
 ### Quick Examples
-#### Create a client:
+#### Create a client
 
 for dev (sandbox)
 ```go
@@ -37,44 +37,48 @@ for prod
 client, err := ecpay.NewClient("<MERCHANT_ID>", "<HASH_KEY>", "<HASH_IV>")
 ```
 
-#### create an order:
+#### create an order
 the order object is quite complex, make sure you check out the official document.
 ```go
-order := Order{
+order := ecpay.Order{
     MerchantTradeNo: fmt.Sprintf("%s%d", uuid.New().String()[:5], time.Now().Unix()%10000),
     StoreID:           "",
-    MerchantTradeDate: FormatDatetime(time.Now()),
-    PaymentType:       PaymentTypeAIO,
+    MerchantTradeDate: ecpay.FormatDatetime(time.Now()),
+    PaymentType:       ecpay.PaymentTypeAIO,
     TotalAmount:       2000,
     TradeDesc:         "訂單測試",
-    ItemName:          FormatItemName([]string{"商品1", "商品2"}),
+    ItemName:          ecpay.FormatItemName([]string{"商品1", "商品2"}),
     ReturnURL:         "https://www.ecpay.com.tw/return_url.php",
-    ChoosePayment:     ChoosePaymentTypeAll,
+    ChoosePayment:     ecpay.ChoosePaymentTypeAll,
     ClientBackURL:     "https://www.ecpay.com.tw/client_back_url.php",
     ItemURL:           "https://www.ecpay.com.tw/item_url.php'",
     Remark:            "交易備註",
     OrderResultURL:    "https://www.ecpay.com.tw/order_result_url.php",
-    NeedExtraPaidInfo: NeedExtraPaidInfoTypeYes,
-    InvoiceMark:       InvoiceMarkTypeNo,
-    ATM: &ATMParam{
+    NeedExtraPaidInfo: ecpay.NeedExtraPaidInfoTypeYes,
+    InvoiceMark:       ecpay.InvoiceMarkTypeNo,
+    ATM: &ecpay.ATMParam{
         ExpireDate:     7,
         PaymentInfoURL: "https://www.ecpay.com.tw/payment_info_url.php",
     },
-    CVSBarcode: &CVSOrBarcodeParam{
+    CVSBarcode: &ecpay.CVSOrBarcodeParam{
         StoreExpireDate: 15,
         PaymentInfoURL:  "https://www.ecpay.com.tw/payment_info_url.php",
     },
-    IgnorePayment: FormatIgnorePayment(IgnorePaymentOption{
+    IgnorePayment: ecpay.FormatIgnorePayment(ecpay.IgnorePaymentOption{
         CVS: true,
     }),
-    Credit: &CreditParam{
-        BindingCard: BindingCardTypeNo,
+    Credit: &ecpay.CreditParam{
+        BindingCard: ecpay.BindingCardTypeNo,
     },
 }
-
+```
+Since the ECPay API requires post form and needs to redirect the client to the ECPay host, which works more like PHP style.
+To make this work in Go, `AioCheckOut` returns a html text that triggers redirect on client side.
+```go
 html, err := client.AioCheckOut(order)
 ```
-In your server, you will need to pass this HTML to your frontend, see `example/main.go` for example:
+You as a server, will need to pass this HTML to your frontend, make sure to add `Content-Type: text/html; charset=utf-8`. `text/html` makes the browser executes the html response instead of just displaying it; `charset=utf-8` makes the `CheckMacValue` validation in ECPay service pass. 
+
 ```go
 mux.HandleFunc("/checkout", func(w http.ResponseWriter, r *http.Request) {
     ...
@@ -82,7 +86,39 @@ mux.HandleFunc("/checkout", func(w http.ResponseWriter, r *http.Request) {
     fmt.Fprint(w, html)
 }
 ```
+The response will look something like this:
+```html
+<form id="5d0eb44f-e36f-45e4-80c6-579c7feba847"
+    action="https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5"
+    method="post"
+>
+    <input type="hidden" name="MerchantTradeDate" id="MerchantTradeDate" value="2020/09/26 23:16:49" />
+    <input type="hidden" name="StoreExpireDate" id="StoreExpireDate" value="15" />
+    <input type="hidden" name="Remark" id="Remark" value="交易備註" />
+    <input type="hidden" name="MerchantTradeNo" id="MerchantTradeNo" value="0174e3409" />
+    <input type="hidden" name="BindingCard" id="BindingCard" value="0" />
+    <input type="hidden" name="OrderResultURL" id="OrderResultURL" value="https://www.ecpay.com.tw/order_result_url.php" />
+    <input type="hidden" name="ItemName" id="ItemName" value="商品1*#商品2" />
+    <input type="hidden" name="ReturnURL" id="ReturnURL" value="https://www.ecpay.com.tw/return_url.php" />
+    <input type="hidden" name="ItemURL" id="ItemURL" value="https://www.ecpay.com.tw/item_url.php" />
+    <input type="hidden" name="ChoosePayment" id="ChoosePayment" value="ALL" />
+    <input type="hidden" name="NeedExtraPaidInfo" id="NeedExtraPaidInfo" value="Y" />
+    <input type="hidden" name="ExpireDate" id="ExpireDate" value="7" />
+    <input type="hidden" name="TotalAmount" id="TotalAmount" value="2000" />
+    <input type="hidden" name="IgnorePayment" id="IgnorePayment" value="CVS" />
+    <input type="hidden" name="PaymentType" id="PaymentType" value="aio" />
+    <input type="hidden" name="EncryptType" id="EncryptType" value="1" />
+    <input type="hidden" name="MerchantID" id="MerchantID" value="2000132" />
+    <input type="hidden" name="CheckMacValue" id="CheckMacValue" value="8D48DA612C0C70B9C453D73D3C7513EC9D3600389D822DF2A00EB0639940DAFD" />
+    <input type="hidden" name="PaymentInfoURL" id="PaymentInfoURL" value="https://www.ecpay.com.tw/payment_info_url.php" />
+    <input type="hidden" name="TradeDesc" id="TradeDesc" value="訂單測試" />
+    <input type="hidden" name="InvoiceMark" id="InvoiceMark" value="N" />
+    <input type="hidden" name="ClientBackURL" id="ClientBackURL" value="https://www.ecpay.com.tw/client_back_url.php" />
+    <script type="text/javascript">document.getElementById("5d0eb44f-e36f-45e4-80c6-579c7feba847").submit();</script>
+</form>
+```
 This will redirect the client to ECPay payment page.
+![](https://i.imgur.com/5QDFYdC.png)
 
 There are more examples in `ecpay/example_test.go`, `example/main.go` and Godoc. 
 

@@ -131,12 +131,12 @@ func (c *Client) do(p Payload) (*http.Response, error) {
 
 // AioCheckOut sends an order to ECPay server (產生訂單).
 func (c *Client) AioCheckOut(order Order) (string, error) {
-	formStr, err := c.generatePostForm(order)
+	html, err := c.generatePostForm(order)
 	if err != nil {
 		return "", err
 	}
 
-	return formStr, nil
+	return html, nil
 }
 
 // QueryTradeInfo queries a single trade info (查詢訂單).

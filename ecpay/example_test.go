@@ -5,8 +5,9 @@ import (
 	"log"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/toastcheng/ecpay-sdk-go/ecpay"
+
+	"github.com/google/uuid"
 )
 
 func ExampleNewClient() {
