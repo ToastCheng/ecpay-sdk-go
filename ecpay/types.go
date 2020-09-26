@@ -146,39 +146,39 @@ const (
 type ChooseSubpaymentType string
 
 const (
-	// ChooseSubpaymentTypeTaishin .
+	// ChooseSubpaymentTypeTaishin Taishin Bank (台新銀行).
 	ChooseSubpaymentTypeTaishin ChooseSubpaymentType = "TAISHIN"
-	// ChooseSubpaymentTypeESUN .
+	// ChooseSubpaymentTypeESUN E.SUN Bank (玉山銀行).
 	ChooseSubpaymentTypeESUN ChooseSubpaymentType = "ESUN"
-	// ChooseSubpaymentTypeBOT .
+	// ChooseSubpaymentTypeBOT Bank of Taiwan (台灣銀行).
 	ChooseSubpaymentTypeBOT ChooseSubpaymentType = "BOT"
-	// ChooseSubpaymentTypeFubon .
+	// ChooseSubpaymentTypeFubon Fubon (富邦銀行).
 	ChooseSubpaymentTypeFubon ChooseSubpaymentType = "FUBON"
-	// ChooseSubpaymentTypeChinaTrust .
+	// ChooseSubpaymentTypeChinaTrust ChinaTrust Bank (中國信託).
 	ChooseSubpaymentTypeChinaTrust ChooseSubpaymentType = "CHINATRUST"
-	// ChooseSubpaymentTypeFirst .
+	// ChooseSubpaymentTypeFirst First Commercial Bank (第一銀行).
 	ChooseSubpaymentTypeFirst ChooseSubpaymentType = "FIRST"
-	// ChooseSubpaymentTypeCathay .
+	// ChooseSubpaymentTypeCathay Cathay Bank (花旗銀行).
 	ChooseSubpaymentTypeCathay ChooseSubpaymentType = "CATHAY"
-	// ChooseSubpaymentTypeMega .
+	// ChooseSubpaymentTypeMega Mega International Commercial Bank (兆豐銀行).
 	ChooseSubpaymentTypeMega ChooseSubpaymentType = "MEGA"
-	// ChooseSubpaymentTypeLand .
+	// ChooseSubpaymentTypeLand Land Bank (土地銀行).
 	ChooseSubpaymentTypeLand ChooseSubpaymentType = "LAND"
 	// ChooseSubpaymentTypeTachong (大眾銀行).
 	ChooseSubpaymentTypeTachong ChooseSubpaymentType = "TACHONG"
-	// ChooseSubpaymentTypeSinoPac .
+	// ChooseSubpaymentTypeSinoPac SinoPac Bank (永豐銀行).
 	ChooseSubpaymentTypeSinoPac ChooseSubpaymentType = "SINOPAC"
-	// ChooseSubpaymentTypeCVS .
+	// ChooseSubpaymentTypeCVS convenience store payment code (超商代碼繳款).
 	ChooseSubpaymentTypeCVS ChooseSubpaymentType = "CVS"
-	// ChooseSubpaymentTypeOK .
+	// ChooseSubpaymentTypeOK OK Mart.
 	ChooseSubpaymentTypeOK ChooseSubpaymentType = "OK"
-	// ChooseSubpaymentTypeFamily .
+	// ChooseSubpaymentTypeFamily Family mart (全家).
 	ChooseSubpaymentTypeFamily ChooseSubpaymentType = "FAMILY"
-	// ChooseSubpaymentTypeHiLife .
+	// ChooseSubpaymentTypeHiLife HiFife.
 	ChooseSubpaymentTypeHiLife ChooseSubpaymentType = "HILIFE"
-	// ChooseSubpaymentTypeIBon .
+	// ChooseSubpaymentTypeIBon 7-11 ibon.
 	ChooseSubpaymentTypeIBon ChooseSubpaymentType = "IBON"
-	// ChooseSubpaymentTypeBarcode .
+	// ChooseSubpaymentTypeBarcode barcode.
 	ChooseSubpaymentTypeBarcode ChooseSubpaymentType = "BARCODE"
 )
 

@@ -81,7 +81,7 @@ type CVSOrBarcodeParam struct {
 	// StoreExpireDate (超商繳費截止時間).
 	// unit: CVS (min), Barcode (day)
 	StoreExpireDate int `json:"StoreExpireDate,omitempty"`
-	// Desc1(交易描述1).
+	// Desc1 (交易描述1).
 	Desc1 string `json:"Desc1,omitempty"`
 	// Desc2 (交易描述2).
 	Desc2 string `json:"Desc2,omitempty"`

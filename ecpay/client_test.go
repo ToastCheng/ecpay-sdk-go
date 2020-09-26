@@ -21,8 +21,8 @@ func getTestClient() *Client {
 func TestCreateOrderAll(t *testing.T) {
 	client := getTestClient()
 	order := Order{
-		MerchantTradeNo: fmt.Sprintf("%s%d", uuid.New().String()[:5], time.Now().Unix()%10000),
-		// StoreID:           "",
+		MerchantTradeNo:   fmt.Sprintf("%s%d", uuid.New().String()[:5], time.Now().Unix()%10000),
+		StoreID:           "",
 		MerchantTradeDate: FormatDatetime(time.Now()),
 		PaymentType:       PaymentTypeAIO,
 		TotalAmount:       2000,
