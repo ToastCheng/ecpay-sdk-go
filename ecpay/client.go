@@ -50,6 +50,16 @@ func NewClient(merchantID, hashKey, hashIV string, options ...ClientOption) (*Cl
 	return c, nil
 }
 
+func (c *Client) Info() map[string]string {
+	return map[string]string{
+		"merchantID": c.merchantID,
+		"hashKey":    c.hashKey,
+		"hashIV":     c.hashIV,
+		"endpoint":   c.endpoint,
+		"vendor":     c.vendor,
+	}
+}
+
 func (c *Client) do(p Payload) (*http.Response, error) {
 	if ok, err := p.Validate(); !ok {
 		return nil, err

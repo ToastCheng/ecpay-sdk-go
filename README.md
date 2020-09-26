@@ -9,6 +9,7 @@
 
 ## Introduction
 ECPay SDK for Golang.
+
 ECPay is a third party payment service in Taiwan, providing lots of payment options, such as ATM, web ATM, credit card, GooglePay, convenience code, etc.
 For developer who wants to enable your app to have payment service, it would be a good choice :).
 
@@ -184,7 +185,7 @@ func main() {
 }
 ```
 
-There are more examples in `client_test.go` and Godoc. 
+There are more examples in `example_test.go` and Godoc. 
 
 ## Contributing
 
