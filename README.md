@@ -188,8 +188,8 @@ There are more examples in `example_test.go` and Godoc.
 
 ## Contributing
 
-Contributions, issues and feature requests are welcome,
- please check out the [issues page](https://github.com/toastcheng/ecpay-sdk-go/issues).
+This project is in development, any contributions, issues and feature requests are welcome!
+Please check out the [issues page](https://github.com/toastcheng/ecpay-sdk-go/issues).
 
 ## License
 
