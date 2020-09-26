@@ -166,11 +166,11 @@ func (c *Client) QueryPaymentInfo(info PaymentInfo) (map[string]interface{}, err
 
 	m, err := url.ParseQuery(string(bodyBytes))
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	dataBytes, err := json.Marshal(m)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	var result map[string]interface{}
 	json.Unmarshal(dataBytes, &result)
@@ -207,11 +207,11 @@ func (c *Client) DoAction(action CreditCardAction) (map[string]interface{}, erro
 
 	m, err := url.ParseQuery(string(bodyBytes))
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	dataBytes, err := json.Marshal(m)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	var result map[string]interface{}
 	json.Unmarshal(dataBytes, &result)
