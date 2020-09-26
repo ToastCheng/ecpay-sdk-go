@@ -13,7 +13,7 @@ ECPay is a third party payment service in Taiwan, providing lots of payment opti
 For developer who wants to enable your app to have payment service, it would be a good choice :).
 
 ## Documentation
-* Go Doc : https://pkg.go.dev/github.com/toastcheng/ecpay-sdk-go/ecpay
+* pkg.go.dev : https://pkg.go.dev/github.com/toastcheng/ecpay-sdk-go
 * ECPay API : https://www.ecpay.com.tw/Service/API_Dwnld
 
 ## Getting Started
@@ -120,7 +120,7 @@ The response will look something like this:
 This will redirect the client to ECPay payment page.
 ![](https://i.imgur.com/5QDFYdC.png)
 
-There are more examples in `ecpay/example_test.go`, `example/main.go` and Godoc. 
+There are more examples in `ecpay/example_test.go`, `example/main.go` and [pkg.go.dev](https://pkg.go.dev/github.com/toastcheng/ecpay-sdk-go). 
 
 ## Contributing
 
