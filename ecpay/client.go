@@ -60,6 +60,24 @@ func (c *Client) Info() map[string]string {
 	}
 }
 
+func (c *Client) generatePostForm(p Payload) (string, error) {
+	if ok, err := p.Validate(); !ok {
+		return "", err
+	}
+
+	form := p.ToFormData()
+	form.Set("MerchantID", c.merchantID)
+	form.Set("CheckMacValue", GetCheckMacValue(form, c.hashKey, c.hashIV))
+
+	var endpoint string
+	switch p.(type) {
+	case Order:
+		endpoint = c.endpoint + "/Cashier/AioCheckOut/V5"
+	}
+	html := GeneratePostForm(endpoint, form)
+	return html, nil
+}
+
 func (c *Client) do(p Payload) (*http.Response, error) {
 	if ok, err := p.Validate(); !ok {
 		return nil, err
@@ -80,8 +98,6 @@ func (c *Client) do(p Payload) (*http.Response, error) {
 
 	var endpoint string
 	switch p.(type) {
-	case Order:
-		endpoint = c.endpoint + "/Cashier/AioCheckOut/V5"
 	case TradeInfo:
 		endpoint = c.endpoint + "/Cashier/QueryTradeInfo/V5"
 	case PaymentInfo:
@@ -100,7 +116,7 @@ func (c *Client) do(p Payload) (*http.Response, error) {
 		endpoint = c.endpoint
 	}
 	req, _ := http.NewRequest("POST", endpoint, strings.NewReader(formStr))
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded; charset=utf-8")
 	req.Header.Add("accept", "*/*")
 	req.Header.Add("accept-encoding", "gzip, deflate, br")
 
@@ -115,18 +131,12 @@ func (c *Client) do(p Payload) (*http.Response, error) {
 
 // AioCheckOut sends an order to ECPay server (產生訂單).
 func (c *Client) AioCheckOut(order Order) (string, error) {
-	resp, err := c.do(order)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	formStr, err := c.generatePostForm(order)
 	if err != nil {
 		return "", err
 	}
 
-	return string(bodyBytes), nil
+	return formStr, nil
 }
 
 // QueryTradeInfo queries a single trade info (查詢訂單).

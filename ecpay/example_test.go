@@ -47,7 +47,7 @@ func ExampleClient_AioCheckOut_all() {
 		ReturnURL:         "https://www.ecpay.com.tw/return_url.php",
 		ChoosePayment:     ecpay.ChoosePaymentTypeAll,
 		ClientBackURL:     "https://www.ecpay.com.tw/client_back_url.php",
-		ItemURL:           "https://www.ecpay.com.tw/item_url.php'",
+		ItemURL:           "https://www.ecpay.com.tw/item_url.php",
 		Remark:            "交易備註",
 		OrderResultURL:    "https://www.ecpay.com.tw/order_result_url.php",
 		NeedExtraPaidInfo: ecpay.NeedExtraPaidInfoTypeYes,
@@ -68,8 +68,11 @@ func ExampleClient_AioCheckOut_all() {
 		},
 	}
 
-	resp, err := client.AioCheckOut(order)
-	fmt.Println(resp)
+	html, err := client.AioCheckOut(order)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(html)
 }
 
 func ExampleClient_AioCheckOut_atm() {
@@ -88,7 +91,7 @@ func ExampleClient_AioCheckOut_atm() {
 		ReturnURL:         "https://www.ecpay.com.tw/return_url.php",
 		ChoosePayment:     ecpay.ChoosePaymentTypeATM,
 		ClientBackURL:     "https://www.ecpay.com.tw/client_back_url.php",
-		ItemURL:           "https://www.ecpay.com.tw/item_url.php'",
+		ItemURL:           "https://www.ecpay.com.tw/item_url.php",
 		Remark:            "交易備註",
 		OrderResultURL:    "https://www.ecpay.com.tw/order_result_url.php",
 		NeedExtraPaidInfo: ecpay.NeedExtraPaidInfoTypeYes,
@@ -99,11 +102,11 @@ func ExampleClient_AioCheckOut_atm() {
 		},
 	}
 
-	resp, err := client.AioCheckOut(order)
+	html, err := client.AioCheckOut(order)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(resp)
+	fmt.Println(html)
 }
 
 func ExampleClient_AioCheckOut_barcode() {
@@ -122,7 +125,7 @@ func ExampleClient_AioCheckOut_barcode() {
 		ReturnURL:         "https://www.ecpay.com.tw/return_url.php",
 		ChoosePayment:     ecpay.ChoosePaymentTypeBarCode,
 		ClientBackURL:     "https://www.ecpay.com.tw/client_back_url.php",
-		ItemURL:           "https://www.ecpay.com.tw/item_url.php'",
+		ItemURL:           "https://www.ecpay.com.tw/item_url.php",
 		Remark:            "交易備註",
 		OrderResultURL:    "https://www.ecpay.com.tw/order_result_url.php",
 		NeedExtraPaidInfo: ecpay.NeedExtraPaidInfoTypeYes,
@@ -133,8 +136,11 @@ func ExampleClient_AioCheckOut_barcode() {
 		},
 	}
 
-	resp, err := client.AioCheckOut(order)
-	fmt.Println(resp)
+	html, err := client.AioCheckOut(order)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(html)
 
 }
 
@@ -154,7 +160,7 @@ func ExampleClient_AioCheckOut_cvs() {
 		ReturnURL:         "https://www.ecpay.com.tw/return_url.php",
 		ChoosePayment:     ecpay.ChoosePaymentTypeCVS,
 		ClientBackURL:     "https://www.ecpay.com.tw/client_back_url.php",
-		ItemURL:           "https://www.ecpay.com.tw/item_url.php'",
+		ItemURL:           "https://www.ecpay.com.tw/item_url.php",
 		Remark:            "交易備註",
 		OrderResultURL:    "https://www.ecpay.com.tw/order_result_url.php",
 		NeedExtraPaidInfo: ecpay.NeedExtraPaidInfoTypeYes,
@@ -165,8 +171,11 @@ func ExampleClient_AioCheckOut_cvs() {
 		},
 	}
 
-	resp, err := client.AioCheckOut(order)
-	fmt.Println(resp)
+	html, err := client.AioCheckOut(order)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(html)
 
 }
 
@@ -186,7 +195,7 @@ func ExampleClient_AioCheckOut_creditCard() {
 		ReturnURL:         "https://www.ecpay.com.tw/return_url.php",
 		ChoosePayment:     ecpay.ChoosePaymentTypeCredit,
 		ClientBackURL:     "https://www.ecpay.com.tw/client_back_url.php",
-		ItemURL:           "https://www.ecpay.com.tw/item_url.php'",
+		ItemURL:           "https://www.ecpay.com.tw/item_url.php",
 		Remark:            "交易備註",
 		OrderResultURL:    "https://www.ecpay.com.tw/order_result_url.php",
 		NeedExtraPaidInfo: ecpay.NeedExtraPaidInfoTypeYes,
@@ -198,9 +207,11 @@ func ExampleClient_AioCheckOut_creditCard() {
 		},
 	}
 
-	resp, err := client.AioCheckOut(order)
-
-	fmt.Println(resp)
+	html, err := client.AioCheckOut(order)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(html)
 
 }
 
@@ -220,7 +231,7 @@ func ExampleClient_AioCheckOut_creditInstallment() {
 		ReturnURL:         "https://www.ecpay.com.tw/return_url.php",
 		ChoosePayment:     ecpay.ChoosePaymentTypeCredit,
 		ClientBackURL:     "https://www.ecpay.com.tw/client_back_url.php",
-		ItemURL:           "https://www.ecpay.com.tw/item_url.php'",
+		ItemURL:           "https://www.ecpay.com.tw/item_url.php",
 		Remark:            "交易備註",
 		OrderResultURL:    "https://www.ecpay.com.tw/order_result_url.php",
 		NeedExtraPaidInfo: ecpay.NeedExtraPaidInfoTypeYes,
@@ -239,8 +250,11 @@ func ExampleClient_AioCheckOut_creditInstallment() {
 		},
 	}
 
-	resp, err := client.AioCheckOut(order)
-	fmt.Println(resp)
+	html, err := client.AioCheckOut(order)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(html)
 
 }
 
@@ -260,7 +274,7 @@ func ExampleClient_AioCheckOut_creditCardPeriod() {
 		ReturnURL:         "https://www.ecpay.com.tw/return_url.php",
 		ChoosePayment:     ecpay.ChoosePaymentTypeCredit,
 		ClientBackURL:     "https://www.ecpay.com.tw/client_back_url.php",
-		ItemURL:           "https://www.ecpay.com.tw/item_url.php'",
+		ItemURL:           "https://www.ecpay.com.tw/item_url.php",
 		Remark:            "交易備註",
 		OrderResultURL:    "https://www.ecpay.com.tw/order_result_url.php",
 		NeedExtraPaidInfo: ecpay.NeedExtraPaidInfoTypeYes,
@@ -275,9 +289,11 @@ func ExampleClient_AioCheckOut_creditCardPeriod() {
 		},
 	}
 
-	resp, err := client.AioCheckOut(order)
-
-	fmt.Println(resp)
+	html, err := client.AioCheckOut(order)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(html)
 
 }
 
@@ -304,9 +320,11 @@ func ExampleClient_AioCheckOut_googlePay() {
 		InvoiceMark:       ecpay.InvoiceMarkTypeNo,
 	}
 
-	resp, err := client.AioCheckOut(order)
-
-	fmt.Println(resp)
+	html, err := client.AioCheckOut(order)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(html)
 
 }
 
@@ -326,16 +344,18 @@ func ExampleClient_AioCheckOut_webATM() {
 		ReturnURL:         "https://www.ecpay.com.tw/return_url.php",
 		ChoosePayment:     ecpay.ChoosePaymentTypeWebATM,
 		ClientBackURL:     "https://www.ecpay.com.tw/client_back_url.php",
-		ItemURL:           "https://www.ecpay.com.tw/item_url.php'",
+		ItemURL:           "https://www.ecpay.com.tw/item_url.php",
 		Remark:            "交易備註",
 		OrderResultURL:    "https://www.ecpay.com.tw/order_result_url.php",
 		NeedExtraPaidInfo: ecpay.NeedExtraPaidInfoTypeYes,
 		InvoiceMark:       ecpay.InvoiceMarkTypeNo,
 	}
 
-	resp, err := client.AioCheckOut(order)
-
-	fmt.Println(resp)
+	html, err := client.AioCheckOut(order)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(html)
 
 }
 
@@ -382,11 +402,11 @@ func ExampleClient_AioCheckOut_invoice() {
 		},
 	}
 
-	resp, err := client.AioCheckOut(order)
+	html, err := client.AioCheckOut(order)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(resp)
+	fmt.Println(html)
 
 }
 

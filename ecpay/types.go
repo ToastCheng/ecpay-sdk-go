@@ -304,8 +304,8 @@ type AllocateStatusType string
 const (
 	// AllocateStatusTypeDone (已撥款).
 	AllocateStatusTypeDone AllocateStatusType = "0"
-	// AllocateStatusNotYet (未撥款).
-	AllocateStatusNotYet AllocateStatusType = "1"
+	// AllocateStatusTypeNotYet (未撥款).
+	AllocateStatusTypeNotYet AllocateStatusType = "1"
 )
 
 type MediaFormatedType string

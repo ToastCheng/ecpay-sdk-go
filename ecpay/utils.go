@@ -4,6 +4,8 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 // FormatItemName joins an array of item name with '#'.
@@ -100,4 +102,19 @@ func ParseQueryString(q string) (map[string]interface{}, error) {
 		mp[k] = v[0]
 	}
 	return mp, err
+}
+
+func GeneratePostForm(action string, form url.Values) string {
+	id := uuid.New().String()
+
+	html := "<form id=\"" + id + "\" action=\"" + action + "\" method=\"post\">"
+	for k, v := range form {
+		html += "<input type=\"hidden\" name=\"" + k + "\" "
+		html += "id=\"" + k + "\" "
+		html += "value=\"" + v[0] + "\" />"
+	}
+	html += "<script type=\"text/javascript\">document.getElementById(\"" + id + "\").submit();</script>"
+	html += "</form>"
+
+	return html
 }

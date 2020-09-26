@@ -31,7 +31,7 @@ func TestCreateOrderAll(t *testing.T) {
 		ReturnURL:         "https://www.ecpay.com.tw/return_url.php",
 		ChoosePayment:     ChoosePaymentTypeAll,
 		ClientBackURL:     "https://www.ecpay.com.tw/client_back_url.php",
-		ItemURL:           "https://www.ecpay.com.tw/item_url.php'",
+		ItemURL:           "https://www.ecpay.com.tw/item_url.php",
 		Remark:            "交易備註",
 		OrderResultURL:    "https://www.ecpay.com.tw/order_result_url.php",
 		NeedExtraPaidInfo: NeedExtraPaidInfoTypeYes,
@@ -52,16 +52,16 @@ func TestCreateOrderAll(t *testing.T) {
 		},
 	}
 
-	resp, err := client.AioCheckOut(order)
+	html, err := client.AioCheckOut(order)
 	assert.NoError(t, err)
-	assert.NotContains(t, resp, "交易失敗 Transaction failed")
+	assert.Contains(t, html, "form")
 }
 
 func TestCreateOrderATM(t *testing.T) {
 	client := getTestClient()
 	order := Order{
 		MerchantTradeNo:   fmt.Sprintf("%s%d", uuid.New().String()[:5], time.Now().Unix()%10000),
-		StoreID:           "",
+		StoreID:           "3002599",
 		MerchantTradeDate: FormatDatetime(time.Now()),
 		PaymentType:       PaymentTypeAIO,
 		TotalAmount:       2000,
@@ -70,7 +70,7 @@ func TestCreateOrderATM(t *testing.T) {
 		ReturnURL:         "https://www.ecpay.com.tw/return_url.php",
 		ChoosePayment:     ChoosePaymentTypeATM,
 		ClientBackURL:     "https://www.ecpay.com.tw/client_back_url.php",
-		ItemURL:           "https://www.ecpay.com.tw/item_url.php'",
+		ItemURL:           "https://www.ecpay.com.tw/item_url.php",
 		Remark:            "交易備註",
 		OrderResultURL:    "https://www.ecpay.com.tw/order_result_url.php",
 		NeedExtraPaidInfo: NeedExtraPaidInfoTypeYes,
@@ -81,10 +81,10 @@ func TestCreateOrderATM(t *testing.T) {
 		},
 	}
 
-	resp, err := client.AioCheckOut(order)
-
+	html, err := client.AioCheckOut(order)
 	assert.NoError(t, err)
-	assert.NotContains(t, resp, "交易失敗 Transaction failed")
+	assert.Contains(t, html, "form")
+
 }
 
 func TestCreateOrderBarcode(t *testing.T) {
@@ -100,7 +100,7 @@ func TestCreateOrderBarcode(t *testing.T) {
 		ReturnURL:         "https://www.ecpay.com.tw/return_url.php",
 		ChoosePayment:     ChoosePaymentTypeBarCode,
 		ClientBackURL:     "https://www.ecpay.com.tw/client_back_url.php",
-		ItemURL:           "https://www.ecpay.com.tw/item_url.php'",
+		ItemURL:           "https://www.ecpay.com.tw/item_url.php",
 		Remark:            "交易備註",
 		OrderResultURL:    "https://www.ecpay.com.tw/order_result_url.php",
 		NeedExtraPaidInfo: NeedExtraPaidInfoTypeYes,
@@ -111,10 +111,10 @@ func TestCreateOrderBarcode(t *testing.T) {
 		},
 	}
 
-	resp, err := client.AioCheckOut(order)
-
+	html, err := client.AioCheckOut(order)
 	assert.NoError(t, err)
-	assert.NotContains(t, resp, "交易失敗 Transaction failed")
+	assert.Contains(t, html, "form")
+
 }
 
 func TestCreateOrderCVS(t *testing.T) {
@@ -130,7 +130,7 @@ func TestCreateOrderCVS(t *testing.T) {
 		ReturnURL:         "https://www.ecpay.com.tw/return_url.php",
 		ChoosePayment:     ChoosePaymentTypeCVS,
 		ClientBackURL:     "https://www.ecpay.com.tw/client_back_url.php",
-		ItemURL:           "https://www.ecpay.com.tw/item_url.php'",
+		ItemURL:           "https://www.ecpay.com.tw/item_url.php",
 		Remark:            "交易備註",
 		OrderResultURL:    "https://www.ecpay.com.tw/order_result_url.php",
 		NeedExtraPaidInfo: NeedExtraPaidInfoTypeYes,
@@ -141,10 +141,10 @@ func TestCreateOrderCVS(t *testing.T) {
 		},
 	}
 
-	resp, err := client.AioCheckOut(order)
+	html, err := client.AioCheckOut(order)
 
 	assert.NoError(t, err)
-	assert.NotContains(t, resp, "交易失敗 Transaction failed")
+	assert.Contains(t, html, "form")
 }
 
 func TestCreateOrderCredit(t *testing.T) {
@@ -160,7 +160,7 @@ func TestCreateOrderCredit(t *testing.T) {
 		ReturnURL:         "https://www.ecpay.com.tw/return_url.php",
 		ChoosePayment:     ChoosePaymentTypeCredit,
 		ClientBackURL:     "https://www.ecpay.com.tw/client_back_url.php",
-		ItemURL:           "https://www.ecpay.com.tw/item_url.php'",
+		ItemURL:           "https://www.ecpay.com.tw/item_url.php",
 		Remark:            "交易備註",
 		OrderResultURL:    "https://www.ecpay.com.tw/order_result_url.php",
 		NeedExtraPaidInfo: NeedExtraPaidInfoTypeYes,
@@ -172,10 +172,10 @@ func TestCreateOrderCredit(t *testing.T) {
 		},
 	}
 
-	resp, err := client.AioCheckOut(order)
+	html, err := client.AioCheckOut(order)
 
 	assert.NoError(t, err)
-	assert.NotContains(t, resp, "交易失敗 Transaction failed")
+	assert.Contains(t, html, "form")
 }
 
 func TestCreateOrderCreditInstallment(t *testing.T) {
@@ -191,7 +191,7 @@ func TestCreateOrderCreditInstallment(t *testing.T) {
 		ReturnURL:         "https://www.ecpay.com.tw/return_url.php",
 		ChoosePayment:     ChoosePaymentTypeCredit,
 		ClientBackURL:     "https://www.ecpay.com.tw/client_back_url.php",
-		ItemURL:           "https://www.ecpay.com.tw/item_url.php'",
+		ItemURL:           "https://www.ecpay.com.tw/item_url.php",
 		Remark:            "交易備註",
 		OrderResultURL:    "https://www.ecpay.com.tw/order_result_url.php",
 		NeedExtraPaidInfo: NeedExtraPaidInfoTypeYes,
@@ -210,10 +210,10 @@ func TestCreateOrderCreditInstallment(t *testing.T) {
 		},
 	}
 
-	resp, err := client.AioCheckOut(order)
+	html, err := client.AioCheckOut(order)
 
 	assert.NoError(t, err)
-	assert.NotContains(t, resp, "交易失敗 Transaction failed")
+	assert.Contains(t, html, "form")
 }
 
 func TestCreateOrderCreditPeriod(t *testing.T) {
@@ -229,7 +229,7 @@ func TestCreateOrderCreditPeriod(t *testing.T) {
 		ReturnURL:         "https://www.ecpay.com.tw/return_url.php",
 		ChoosePayment:     ChoosePaymentTypeCredit,
 		ClientBackURL:     "https://www.ecpay.com.tw/client_back_url.php",
-		ItemURL:           "https://www.ecpay.com.tw/item_url.php'",
+		ItemURL:           "https://www.ecpay.com.tw/item_url.php",
 		Remark:            "交易備註",
 		OrderResultURL:    "https://www.ecpay.com.tw/order_result_url.php",
 		NeedExtraPaidInfo: NeedExtraPaidInfoTypeYes,
@@ -244,10 +244,10 @@ func TestCreateOrderCreditPeriod(t *testing.T) {
 		},
 	}
 
-	resp, err := client.AioCheckOut(order)
+	html, err := client.AioCheckOut(order)
 
 	assert.NoError(t, err)
-	assert.NotContains(t, resp, "交易失敗 Transaction failed")
+	assert.Contains(t, html, "form")
 }
 
 func TestCreateOrderGooglePay(t *testing.T) {
@@ -270,10 +270,10 @@ func TestCreateOrderGooglePay(t *testing.T) {
 		InvoiceMark:       InvoiceMarkTypeNo,
 	}
 
-	resp, err := client.AioCheckOut(order)
+	html, err := client.AioCheckOut(order)
 
 	assert.NoError(t, err)
-	assert.NotContains(t, resp, "交易失敗 Transaction failed")
+	assert.Contains(t, html, "form")
 }
 
 func TestCreateOrderWebATM(t *testing.T) {
@@ -289,17 +289,17 @@ func TestCreateOrderWebATM(t *testing.T) {
 		ReturnURL:         "https://www.ecpay.com.tw/return_url.php",
 		ChoosePayment:     ChoosePaymentTypeWebATM,
 		ClientBackURL:     "https://www.ecpay.com.tw/client_back_url.php",
-		ItemURL:           "https://www.ecpay.com.tw/item_url.php'",
+		ItemURL:           "https://www.ecpay.com.tw/item_url.php",
 		Remark:            "交易備註",
 		OrderResultURL:    "https://www.ecpay.com.tw/order_result_url.php",
 		NeedExtraPaidInfo: NeedExtraPaidInfoTypeYes,
 		InvoiceMark:       InvoiceMarkTypeNo,
 	}
 
-	resp, err := client.AioCheckOut(order)
+	html, err := client.AioCheckOut(order)
 
 	assert.NoError(t, err)
-	assert.NotContains(t, resp, "交易失敗 Transaction failed")
+	assert.Contains(t, html, "form")
 }
 
 func TestCreateOrderInvoice(t *testing.T) {
@@ -342,10 +342,10 @@ func TestCreateOrderInvoice(t *testing.T) {
 		},
 	}
 
-	resp, err := client.AioCheckOut(order)
+	html, err := client.AioCheckOut(order)
 
 	assert.NoError(t, err)
-	assert.NotContains(t, resp, "交易失敗 Transaction failed")
+	assert.Contains(t, html, "form")
 }
 
 func TestQueryTradeInfo(t *testing.T) {
@@ -437,4 +437,5 @@ func TestDownloadMerchantBalance(t *testing.T) {
 
 	_, err := client.TradeNoAio(statement)
 	assert.NoError(t, err)
+
 }
