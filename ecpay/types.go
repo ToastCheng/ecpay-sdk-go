@@ -14,7 +14,7 @@ const (
 	ActionTypeN ActionType = "N"
 )
 
-// CarrierType defines the struct of carrier options(載具類別).
+// CarrierType defines the struct of carrier options (載具類別).
 type CarrierType string
 
 const (
@@ -186,25 +186,33 @@ const (
 type NeedExtraPaidInfoType string
 
 const (
+	// NeedExtraPaidInfoTypeYes yes.
 	NeedExtraPaidInfoTypeYes NeedExtraPaidInfoType = "Y"
-	NeedExtraPaidInfoTypeNo  NeedExtraPaidInfoType = "N"
+	// NeedExtraPaidInfoTypeNo no.
+	NeedExtraPaidInfoTypeNo NeedExtraPaidInfoType = "N"
 )
 
 // InvoiceMarkType defines the struct of invoice options (電子發票開立註記).
 type InvoiceMarkType string
 
 const (
+	// InvoiceMarkTypeYes yes.
 	InvoiceMarkTypeYes InvoiceMarkType = "Y"
-	InvoiceMarkTypeNo  InvoiceMarkType = "N"
+	// InvoiceMarkTypeNo no.
+	InvoiceMarkTypeNo InvoiceMarkType = "N"
 )
 
 // LanguageType defines the struct of language options (語系設定).
 type LanguageType string
 
 const (
-	LanguageTypeEnglish           LanguageType = "ENG"
-	LanguageTypeKorean            LanguageType = "KOR"
-	LanguageTypeJapanese          LanguageType = "JPN"
+	// LanguageTypeEnglish English.
+	LanguageTypeEnglish LanguageType = "ENG"
+	// LanguageTypeKorean Korean.
+	LanguageTypeKorean LanguageType = "KOR"
+	// LanguageTypeJapanese Japanese.
+	LanguageTypeJapanese LanguageType = "JPN"
+	// LanguageTypeSimplifiedChinese SimplifiedChinese.
 	LanguageTypeSimplifiedChinese LanguageType = "CHI"
 )
 
@@ -212,23 +220,29 @@ const (
 type BindingCardType string
 
 const (
+	// BindingCardTypeYes (使用記憶信用卡).
 	BindingCardTypeYes BindingCardType = "1"
-	BindingCardTypeNo  BindingCardType = "0"
+	// BindingCardTypeNo (不使用記憶信用卡).
+	BindingCardTypeNo BindingCardType = "0"
 )
 
 // RedeemType defines the struct of redeem options (信用卡是否使用紅利折抵).
 type RedeemType string
 
 const (
+	// RedeemTypeYes yes.
 	RedeemTypeYes RedeemType = "Y"
-	RedeemTypeNo  RedeemType = "N"
+	// RedeemTypeNo no.
+	RedeemTypeNo RedeemType = "N"
 )
 
 // ClearanceMarkType defines the struct of redeem options (通關方式).
 type ClearanceMarkType string
 
 const (
-	ClearanceMarkTypeNormal  ClearanceMarkType = "1"
+	// ClearanceMarkTypeNormal (非海關出口).
+	ClearanceMarkTypeNormal ClearanceMarkType = "1"
+	// ClearanceMarkTypeCustoms (經海關出口).
 	ClearanceMarkTypeCustoms ClearanceMarkType = "2"
 )
 
@@ -236,20 +250,25 @@ const (
 type PrintType string
 
 const (
+	// PrintTypeYes yes.
 	PrintTypeYes PrintType = "1"
-	PrintTypeNo  PrintType = "0"
+	// PrintTypeNo no.
+	PrintTypeNo PrintType = "0"
 )
 
 // PayDateType defines the struct of pay date type options (查詢日期類別).
 type PayDateType string
 
 const (
-	PayDateTypeFund  PayDateType = "fund"
+	// PayDateTypeFund (依交易款項結算日期).
+	PayDateTypeFund PayDateType = "fund"
+	// PayDateTypeClose (依操作關帳或自動關帳日期).
 	PayDateTypeClose PayDateType = "close"
+	// PayDateTypeEnter (依撥款至特店綠界帳戶日期).
 	PayDateTypeEnter PayDateType = "enter"
 )
 
-// DateType defines the struct of pay date type options (查詢日期類別).
+// DateType defines the struct of date type options (查詢日期類別).
 type DateType string
 
 const (
@@ -261,7 +280,7 @@ const (
 	DateTypeOrder DateType = "6"
 )
 
-// MerchantPaymentType defines the struct of pay date type options (查詢日期類別).
+// MerchantPaymentType defines the struct of payment type options (查詢日期類別).
 type MerchantPaymentType string
 
 const (
@@ -277,6 +296,7 @@ const (
 	MerchantPaymentTypeBarcode MerchantPaymentType = "05"
 )
 
+// PlatformStatusType defines the struct of platform status options (訂單類型).
 type PlatformStatusType string
 
 const (
@@ -288,6 +308,7 @@ const (
 	PlatformStatusTypePlatform PlatformStatusType = "2"
 )
 
+// PaymentStatusType defines the struct of payment status options (付款狀態).
 type PaymentStatusType string
 
 const (
@@ -299,6 +320,7 @@ const (
 	PaymentStatusTypeFailed PaymentStatusType = "2"
 )
 
+// AllocateStatusType defines the struct of allocation status options (撥款狀態).
 type AllocateStatusType string
 
 const (
@@ -308,6 +330,7 @@ const (
 	AllocateStatusTypeNotYet AllocateStatusType = "1"
 )
 
+// MediaFormatedType defines the media format options (CSV格式).
 type MediaFormatedType string
 
 const (
@@ -317,9 +340,12 @@ const (
 	MediaFormatedTypeNew MediaFormatedType = "1"
 )
 
+// CharSetType defines the charset options (檔案編碼格式).
 type CharSetType string
 
 const (
+	// CharSetTypeBig5 Big-5.
 	CharSetTypeBig5 CharSetType = "1"
+	// CharSetTypeUTF8 UTF-8.
 	CharSetTypeUTF8 CharSetType = "2"
 )

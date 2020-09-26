@@ -50,6 +50,7 @@ func NewClient(merchantID, hashKey, hashIV string, options ...ClientOption) (*Cl
 	return c, nil
 }
 
+// Info returns the client information.
 func (c *Client) Info() map[string]string {
 	return map[string]string{
 		"merchantID": c.merchantID,

@@ -4,6 +4,7 @@
 [![GoDoc](https://img.shields.io/badge/go-doc-blue)](https://pkg.go.dev/github.com/toastcheng/ecpay-sdk-go/ecpay)
 [![Coverage Status](https://coveralls.io/repos/github/ToastCheng/ecpay-sdk-go/badge.svg)](https://coveralls.io/github/ToastCheng/ecpay-sdk-go)
 [![GitHub Actions](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Ftoastcheng%2Fecpay-sdk-go%2Fbadge&style=flat-square)](https://actions-badge.atrox.dev/toastcheng/ecpay-sdk-go/goto)
+[![Go Report Card](https://goreportcard.com/badge/github.com/toastcheng/ecpay-sdk-go)](https://goreportcard.com/report/github.com/toastcheng/ecpay-sdk-go)
 
 
 ## Introduction

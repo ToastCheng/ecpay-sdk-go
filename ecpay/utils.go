@@ -13,6 +13,7 @@ func FormatItemName(items []string) string {
 	return strings.Join(items, "#")
 }
 
+// IgnorePaymentOption defines the struct of IgnorePayment option.
 type IgnorePaymentOption struct {
 	Credit  bool
 	WebATM  bool
@@ -42,6 +43,7 @@ func FormatIgnorePayment(option IgnorePaymentOption) string {
 	return strings.Join(res, "#")
 }
 
+// CreditInstallmentOption defines the struct of CreditInstallment option.
 type CreditInstallmentOption struct {
 	Month3  bool
 	Month6  bool
@@ -104,6 +106,7 @@ func ParseQueryString(q string) (map[string]interface{}, error) {
 	return mp, err
 }
 
+// GeneratePostForm generates html post form for redirecting client to payment site.
 func GeneratePostForm(action string, form url.Values) string {
 	id := uuid.New().String()
 
