@@ -286,7 +286,7 @@ type MerchantPaymentType string
 const (
 	// MerchantPaymentTypeCreditCard (付款日期).
 	MerchantPaymentTypeCreditCard MerchantPaymentType = "01"
-	// DateTypeApproriation (網路ATM).
+	// MerchantPaymentTypeWebATM (網路ATM).
 	MerchantPaymentTypeWebATM MerchantPaymentType = "02"
 	// MerchantPaymentTypeATM (ATM).
 	MerchantPaymentTypeATM MerchantPaymentType = "03"
