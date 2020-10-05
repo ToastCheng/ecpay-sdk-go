@@ -413,8 +413,8 @@ func TestFundingReconDetail(t *testing.T) {
 	statement := Statement{
 		MerchantTradeNo: "NO123",
 		PayDateType:     PayDateTypeClose,
-		BeginDate:       "2018-02-12",
-		EndDate:         "2018-02-12",
+		BeginDate:       FormatDate(time.Now()),
+		EndDate:         FormatDate(time.Now()),
 		MediaFormated:   "1",
 	}
 
@@ -426,8 +426,8 @@ func TestDownloadMerchantBalance(t *testing.T) {
 	client := getTestClient()
 	statement := CreditCardStatement{
 		DateType:        DateTypeOrder,
-		BeginDate:       "2018-02-12",
-		EndDate:         "2018-02-12",
+		BeginDate:       FormatDate(time.Now()),
+		EndDate:         FormatDate(time.Now()),
 		PaymentType:     MerchantPaymentTypeCreditCard,
 		MerchantTradeNo: "NO123",
 		MediaFormated:   MediaFormatedTypeNew,

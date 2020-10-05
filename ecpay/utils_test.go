@@ -16,17 +16,19 @@ func TestIgnorePayment(t *testing.T) {
 		Credit:  true,
 		ATM:     true,
 		Barcode: true,
+		WebATM:  true,
 	}
-	assert.Equal(t, FormatIgnorePayment(option), "Credit#ATM#BARCODE")
+	assert.Equal(t, FormatIgnorePayment(option), "Credit#WebATM#ATM#BARCODE")
 
 }
 
 func TestFormatCreditInstallmentOption(t *testing.T) {
 	option := CreditInstallmentOption{
 		Month3:  true,
+		Month9:  true,
 		Month12: true,
 	}
-	assert.Equal(t, FormatCreditInstallmentOption(option), "3,12")
+	assert.Equal(t, FormatCreditInstallmentOption(option), "3,9,12")
 
 }
 

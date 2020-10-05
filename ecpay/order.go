@@ -303,8 +303,6 @@ func (o Order) ToFormData() url.Values {
 			k == "Credit" {
 			for kk, vv := range v.(map[string]interface{}) {
 				switch t := vv.(type) {
-				case int:
-					req.Set(kk, string(t))
 				case float32, float64:
 					req.Set(kk, fmt.Sprintf("%.0f", t))
 				case string:
@@ -313,10 +311,6 @@ func (o Order) ToFormData() url.Values {
 			}
 		} else {
 			switch t := v.(type) {
-			case int:
-				req.Set(k, string(t))
-			case int64:
-				req.Set(k, string(t))
 			case float32, float64:
 				req.Set(k, fmt.Sprintf("%.0f", t))
 			case string:

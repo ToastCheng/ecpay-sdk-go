@@ -2,7 +2,6 @@ package ecpay
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/url"
 )
 
@@ -25,18 +24,7 @@ func (t TradeInfo) ToFormData() url.Values {
 	mp := map[string]interface{}{}
 	databytes, _ := json.Marshal(t)
 	json.Unmarshal(databytes, &mp)
-	for k, v := range mp {
-		switch t := v.(type) {
-		case int:
-			req.Set(k, string(t))
-		case int64:
-			req.Set(k, string(t))
-		case float32, float64:
-			req.Set(k, fmt.Sprintf("%.0f", t))
-		case string:
-			req.Set(k, t)
-		}
-	}
+	req = setUrlValues(req, mp)
 
 	return req
 }
@@ -60,18 +48,7 @@ func (t PaymentInfo) ToFormData() url.Values {
 	mp := map[string]interface{}{}
 	databytes, _ := json.Marshal(t)
 	json.Unmarshal(databytes, &mp)
-	for k, v := range mp {
-		switch t := v.(type) {
-		case int:
-			req.Set(k, string(t))
-		case int64:
-			req.Set(k, string(t))
-		case float32, float64:
-			req.Set(k, fmt.Sprintf("%.0f", t))
-		case string:
-			req.Set(k, t)
-		}
-	}
+	req = setUrlValues(req, mp)
 
 	return req
 }
@@ -95,18 +72,7 @@ func (c CreditCardPeriodInfo) ToFormData() url.Values {
 	mp := map[string]interface{}{}
 	databytes, _ := json.Marshal(c)
 	json.Unmarshal(databytes, &mp)
-	for k, v := range mp {
-		switch t := v.(type) {
-		case int:
-			req.Set(k, string(t))
-		case int64:
-			req.Set(k, string(t))
-		case float32, float64:
-			req.Set(k, fmt.Sprintf("%.0f", t))
-		case string:
-			req.Set(k, t)
-		}
-	}
+	req = setUrlValues(req, mp)
 
 	return req
 }

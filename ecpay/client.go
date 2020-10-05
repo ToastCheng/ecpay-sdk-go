@@ -113,8 +113,6 @@ func (c *Client) do(p Payload) (*http.Response, error) {
 		endpoint = c.endpoint + "/CreditDetail/DoAction"
 	case CreditCardStatement:
 		endpoint = c.vendor + "/PaymentMedia/TradeNoAio"
-	default:
-		endpoint = c.endpoint
 	}
 	req, _ := http.NewRequest("POST", endpoint, strings.NewReader(formStr))
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded; charset=utf-8")

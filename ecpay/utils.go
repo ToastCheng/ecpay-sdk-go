@@ -1,6 +1,7 @@
 package ecpay
 
 import (
+	"fmt"
 	"net/url"
 	"strings"
 	"time"
@@ -88,7 +89,7 @@ func FormatDatetime(time time.Time) string {
 	return time.Format("2006/01/02 15:04:05")
 }
 
-// FormatDate convert time.Time into yyyy/MM/dd HH:mm:ss format.
+// FormatDate convert time.Time into yyyy-MM=dd format.
 func FormatDate(time time.Time) string {
 	return time.Format("2006-01-02")
 }
@@ -120,4 +121,16 @@ func GeneratePostForm(action string, form url.Values) string {
 	html += "</form>"
 
 	return html
+}
+
+func setUrlValues(req url.Values, mp map[string]interface{}) url.Values {
+	for k, v := range mp {
+		switch t := v.(type) {
+		case float32, float64:
+			req.Set(k, fmt.Sprintf("%.0f", t))
+		case string:
+			req.Set(k, t)
+		}
+	}
+	return req
 }

@@ -506,8 +506,8 @@ func ExampleClient_FundingReconDetail() {
 	statement := ecpay.Statement{
 		MerchantTradeNo: "NO123",
 		PayDateType:     ecpay.PayDateTypeClose,
-		BeginDate:       "2018-02-12",
-		EndDate:         "2018-02-12",
+		BeginDate:       ecpay.FormatDate(time.Now()),
+		EndDate:         ecpay.FormatDate(time.Now()),
 		MediaFormated:   "1",
 	}
 
@@ -525,8 +525,8 @@ func ExampleClient_TradeNoAio() {
 	}
 	statement := ecpay.CreditCardStatement{
 		DateType:        ecpay.DateTypeOrder,
-		BeginDate:       "2018-02-12",
-		EndDate:         "2018-02-12",
+		BeginDate:       ecpay.FormatDate(time.Now()),
+		EndDate:         ecpay.FormatDate(time.Now()),
 		PaymentType:     ecpay.MerchantPaymentTypeCreditCard,
 		MerchantTradeNo: "NO123",
 		MediaFormated:   ecpay.MediaFormatedTypeNew,
